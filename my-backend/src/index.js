@@ -12,19 +12,11 @@ app.get('/', (req, res) => {
     });
 });
 
-/*app.get('/:name', (req, res) => {
-    let name = req.params.name;
-
-    res.json({
-        message: `Hello ${name}`
-    });
-});*/
-
 app.post('/ejecutar', function (req, res){
-    //let cod = req.body.codigo;
     res.json({
         message: `El código es: ${req.body.codigo}`
     });
+    
 });
 
 app.listen(5000, () => {

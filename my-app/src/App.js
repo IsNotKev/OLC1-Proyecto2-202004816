@@ -9,7 +9,6 @@ function App() {
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor; 
   }
-  
 
   function ejecutar() {
     var obj = {'codigo':editorRef.current.getValue()}
@@ -34,10 +33,54 @@ function App() {
       })
   }
 
+  function leerArchivo(e) {
+    var archivo = e.target.files[0];
+    if (!archivo) {
+      return;
+    }
+    var lector = new FileReader();
+    lector.onload = function(e) {
+      var contenido = e.target.result;
+      mostrarContenido(contenido);
+    };
+    lector.readAsText(archivo);
+  }
+
+  function mostrarContenido(contenido) {
+    editorRef.current.getModel().setValue(contenido);
+  }
+  
+  function downloadFiles() {
+    let file_name = 'Nuevo'
+    let data = editorRef.current.getValue();
+    let file_type = '.cst';
+    var file = new Blob([data], {type: file_type});
+    if (window.navigator.msSaveOrOpenBlob) 
+        window.navigator.msSaveOrOpenBlob(file, file_name);
+    else { 
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = file_name;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+}
+
   return (
     
-    <div className='min-h-screen min-w-full bg-gray-500 flex justify-center items-center flex-col gap-10'>
-      <button onClick={ejecutar} type="button" class="btn btn-outline-dark" style={{align:'center',marginTop:'2%'}}>Ejecutar</button>
+    <div>
+      <form class="form-inline">
+      <div class="form-group">
+          <input required class="form-control" type="file" id="file-input" onChange={leerArchivo} style={{marginTop:'2%',width:'50%'}}></input>
+          <button onClick={downloadFiles} type="button" required class="btn btn-outline-dark" style={{marginTop:'2%',marginLeft:'93%'}}>Guardar</button> 
+          <button onClick={ejecutar} type="button" required class="btn btn-outline-dark" style={{marginTop:'2%',marginLeft:'93%'}}>Ejecutar</button> 
+      </div>
+      </form>
       <p>
 
       </p>
