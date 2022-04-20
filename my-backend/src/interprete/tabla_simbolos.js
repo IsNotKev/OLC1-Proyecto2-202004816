@@ -1,9 +1,12 @@
+const { TIPO_VALOR } = require("./instrucciones");
+
 const TIPO_DATO = {
-    NUMERO:         0,
+    ENTERO:         0,
 	DOUBLE:			1,
 	IDENTIFICADOR:  2,
 	CADENA:         3,
-	CARACTER:		4
+	CARACTER:		4,
+	BOOLEAN:		5
 }
 
 function crearSimbolo(id, tipo, valor) {
@@ -20,8 +23,17 @@ class TS{
         this._simbolos = simbolos;
     }
 
-    agregar(id, tipo) {
+    agregar(id, tipo, valor) {
         const nuevoSimbolo = crearSimbolo(id, tipo);
+        if(nuevoSimbolo.tipo===valor.tipo){
+            nuevoSimbolo.valor = valor.valor;          
+        }else{
+            if(nuevoSimbolo.tipo === TIPO_VALOR.DOUBLE && valor.tipo === TIPO_VALOR.ENTERO){
+                nuevoSimbolo.valor = valor.valor; 
+            }else{
+                throw 'ERROR DE TIPOS -> variable: ' + id + ' tiene tipo: '+ nuevoSimbolo.tipo +' y el valor a asignar es de tipo: '+valor.tipo;
+            }          
+        }
         this._simbolos.push(nuevoSimbolo);
     }
 
@@ -46,7 +58,11 @@ class TS{
                 simbolo.valor = valor.valor;
                 
             }else{
-                throw 'ERROR DE TIPOS -> variable: ' + id + ' tiene tipo: '+simbolo.tipo +' y el valor a asignar es de tipo: '+valor.tipo;
+                if(nuevoSimbolo.tipo === TIPO_VALOR.DOUBLE && valor.tipo === TIPO_VALOR.ENTERO){
+                    nuevoSimbolo.valor = valor.valor; 
+                }else{
+                    throw 'ERROR DE TIPOS -> variable: ' + id + ' tiene tipo: '+ nuevoSimbolo.tipo +' y el valor a asignar es de tipo: '+valor.tipo;
+                } 
             }
         }
         else {

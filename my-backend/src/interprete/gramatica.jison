@@ -18,6 +18,9 @@
 "//".*                              // comentario simple línea
 [/][*][^*]*[*]+([^/*][^*]*[*]+)*[/] // comentario multiple líneas
 
+\"(.|\\\")*\"				        { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }
+\'(\\(n|\"|\'|\\|t|r)|.)\'			{ yytext = yytext.substr(1,yyleng-2); return 'CARACTER'; }
+
 //Palabras reservadas
 
 "Int"                   return "INT";
@@ -98,11 +101,9 @@
 
 //DATOS
 
-\"[^\"]*\"				{ yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }
-\'[^\"]*\'			    { yytext = yytext.substr(1,yyleng-2); return 'CARACTER'; }
-[0-9]+("."[0-9]+)\b  	return 'DECIMAL';
-[0-9]+\b				return 'ENTERO';
-([a-zA-Z])[a-zA-Z0-9_]*	return 'IDENTIFICADOR';
+[0-9]+("."[0-9]+)\b  	            return 'DECIMAL';
+[0-9]+\b				            return 'ENTERO';
+([a-zA-Z])[a-zA-Z0-9_]*	            return 'IDENTIFICADOR';
 
 <<EOF>>				    return 'EOF';
 .					   {console.log(yylloc.first_line, yylloc.first_column,'Lexico',yytext)}
@@ -144,19 +145,26 @@ inicio
 ;
 
 declaracion
-    :INT IDENTIFICADOR IGUAL expresionint PUNTOYCOMA
-    |INT IDENTIFICADOR PUNTOYCOMA
-    |DOUBLE IDENTIFICADOR IGUAL expresion PUNTOYCOMA
-    |DOUBLE IDENTIFICADOR PUNTOYCOMA
-    |CHAR IDENTIFICADOR CARACTER PUNTOYCOMA
-    |CHAR IDENTIFICADOR PUNTOYCOMA
-    |STRING IDENTIFICADOR expresion PUNTOYCOMA
-    |STRING IDENTIFICADOR PUNTOYCOMA
+    :INT listaid IGUAL expresion PUNTOYCOMA       { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.ENTERO,$4); }
+    |INT listaid PUNTOYCOMA                       { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.ENTERO,instruccionesAPI.nuevoValor(0, TIPO_VALOR.ENTERO)); }
+    |DOUBLE listaid IGUAL expresion PUNTOYCOMA    { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.DOUBLE,$4); }
+    |DOUBLE listaid PUNTOYCOMA                    { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.DOUBLE,instruccionesAPI.nuevoValor(0.0, TIPO_VALOR.DOUBLE)); }
+    |CHAR listaid IGUAL expresion PUNTOYCOMA       { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.CARACTER,$4); }
+    |CHAR listaid PUNTOYCOMA                      { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.CARACTER,instruccionesAPI.nuevoValor('', TIPO_VALOR.CARACTER)); }
+    |STRING listaid IGUAL expresion PUNTOYCOMA    { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.CADENA,$4); }
+    |STRING listaid PUNTOYCOMA                    { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.CADENA,instruccionesAPI.nuevoValor("", TIPO_VALOR.CADENA)); }
+    |BOOLEAN listaid IGUAL expresion PUNTOYCOMA   { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.BOOLEAN,$4); }
+    |BOOLEAN listaid PUNTOYCOMA                   { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.BOOLEAN,instruccionesAPI.nuevoValor('TRUE', TIPO_VALOR.BOOLEAN)); }
+;
+
+listaid
+    :listaid COMA IDENTIFICADOR         {$1.push($3); $$=$1;}
+    |IDENTIFICADOR                      {$$=[$1]}
 ;
 
 expresion
     :MENOS expresion %prec UMENOS		
-    |expresion MAS expresion            
+    |expresion MAS expresion           {  } 
     |expresion MENOS expresion          
     |expresion POR expresion               
     |expresion DIVIDIR expresion

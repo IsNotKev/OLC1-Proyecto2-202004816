@@ -62,6 +62,8 @@ function procesarBloque(instrucciones, tablaDeSimbolos) {
         }else if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIR) {
             salida += procesarImprimir(instruccion, tablaDeSimbolos,anterior);
             anterior = false;
+        }else if (instruccion.tipo === TIPO_INSTRUCCION.DECLARACION) {
+            procesarDeclaracion(instruccion, tablaDeSimbolos);
         }
     });
     return salida;
@@ -96,5 +98,28 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         return {valor: expresion.valor, tipo: TIPO_DATO.DOUBLE };
     }else if (expresion.tipo === TIPO_VALOR.CARACTER) {
         return {valor: expresion.valor, tipo: TIPO_DATO.CARACTER};
+    }else if (expresion.tipo === TIPO_VALOR.IDENTIFICADOR) {
+        const sym = tablaDeSimbolos.obtener(expresion.valor);
+        return {valor: sym.valor, tipo: sym.tipo};
+    }
+}
+
+function procesarDeclaracion(instruccion, tablaDeSimbolos) { //aqui cambiamos para que acepte el tipo_dato de la declaracion
+    instruccion.identificadores.forEach(identificador=>{
+        if(instruccion.valor.tipo === TIPO_VALOR.IDENTIFICADOR){
+            var nvalor = obtenerValor(instruccion.valor.valor,tablaDeSimbolos);
+            tablaDeSimbolos.agregar(identificador, instruccion.tipo_dato, nvalor);
+        }else{
+            tablaDeSimbolos.agregar(identificador, instruccion.tipo_dato, instruccion.valor);
+        }
+    });  
+}
+
+function obtenerValor(id,tablaDeSimbolos){
+    const sym = tablaDeSimbolos.obtener(id);
+    if(sym.valor.tipo === TIPO_VALOR.IDENTIFICADOR){
+        return obtenerValor(sym.valor.id,tablaDeSimbolos);
+    }else{
+        return sym;
     }
 }

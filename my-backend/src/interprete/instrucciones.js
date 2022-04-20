@@ -76,18 +76,19 @@ const instruccionesAPI = {
 			expresion: expresion
 		};
 	},
-    nuevoDeclaracion: function(identificador, tipo) {
+    nuevoDeclaracion: function(identificador, tipo, valor) {
 		return {
 			tipo: TIPO_INSTRUCCION.DECLARACION,
-			identificador: identificador,
-			tipo_dato: tipo
+			identificadores: identificador,
+			tipo_dato: tipo,
+			valor: valor
 		}
 	},
-    nuevoAsignacion: function(identificador, expresionNumerica) {
+    nuevoAsignacion: function(identificador, valor) {
 		return {
 			tipo: TIPO_INSTRUCCION.ASIGNACION,
 			identificador: identificador,
-			expresionNumerica: expresionNumerica
+			valor: valor
 		}
 	},
     nuevoOperador: function(operador){
