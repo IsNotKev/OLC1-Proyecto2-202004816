@@ -41,22 +41,7 @@ class TS{
         const simbolo = this._simbolos.filter(simbolo => simbolo.id === id)[0];
         if (simbolo) {
             if(simbolo.tipo===valor.tipo){
-                /*if(simbolo.tipo===TIPO_DATO.NUMERO){
-                    if(valor.valor instanceof String){ //para que no hayan clavos, convertimos si es necesario
-                        simbolo.valor = parseInt(valor.valor,10);
-                    }else{
-                        simbolo.valor = valor.valor;
-                    }
-                }else{
-                    if(valor.valor instanceof Number){ //para que no hayan clavos, convertimos si es necesario
-                        simbolo.valor = valor.valor.toString();
-                    }else{
-                        simbolo.valor = valor.valor;
-                    }
-                }*/
-
-                simbolo.valor = valor.valor;
-                
+                simbolo.valor = valor.valor;            
             }else{
                 if(nuevoSimbolo.tipo === TIPO_VALOR.DOUBLE && valor.tipo === TIPO_VALOR.ENTERO){
                     nuevoSimbolo.valor = valor.valor; 
