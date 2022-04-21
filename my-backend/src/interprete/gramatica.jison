@@ -168,8 +168,8 @@ expresion
     |expresion MENOS expresion         { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.RESTA); }
     |expresion POR expresion           { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MULTIPLICACION); }   
     |expresion DIVIDIR expresion       { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.DIVISION); }
-    |expresion POTENCIA expresion
-    |expresion MODULO expresion        
+    |expresion POTENCIA expresion      { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.POTENCIA); }
+    |expresion MODULO expresion        { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MODULO); }
     |expresion D_IGUAL expresion         
     |expresion DIFERENTE expresion       
     |expresion MAYOR_IGUAL expresion    

@@ -97,7 +97,7 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         const valor = procesarExpresion(expresion.operandoIzq, tablaDeSimbolos);
         if(valor.tipo === TIPO_VALOR.ENTERO || valor.tipo === TIPO_VALOR.DOUBLE){
             const res= valor.valor * -1;
-            return {valor: res, tipo: TIPO_VALOR.ENTERO};
+            return {valor: res, tipo: valor.tipo};
         }else{
             throw 'ERROR -> expresion: "' + valor.valor + '" No se puede negar';
         }
@@ -117,6 +117,14 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
         return dividir(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.POTENCIA){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return potencia(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.MODULO){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return modulo(valor,valor2);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
         return {valor: expresion.valor, tipo: TIPO_VALOR.CADENA };
     }else if (expresion.tipo === TIPO_VALOR.ENTERO) {
@@ -203,7 +211,7 @@ function multiplicar(izq,der){
     }else if((izq.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.DOUBLE) && !(izq.tipo === TIPO_VALOR.BOOLEAN || der.tipo === TIPO_VALOR.BOOLEAN)){
         res = obtener_no(izq) * obtener_no(der);
         return {valor: res, tipo: TIPO_VALOR.DOUBLE }; 
-    }else if((izq.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.ENTERO)&& !(izq.tipo === TIPO_VALOR.BOOLEAN || der.tipo === TIPO_VALOR.BOOLEAN)){
+    }else if((izq.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.ENTERO) && !(izq.tipo === TIPO_VALOR.BOOLEAN || der.tipo === TIPO_VALOR.BOOLEAN)){
         res = obtener_no(izq) * obtener_no(der);
         return {valor: res, tipo: TIPO_VALOR.ENTERO };
     }else{
@@ -224,6 +232,26 @@ function dividir(izq,der){
         return {valor: res, tipo: TIPO_VALOR.DOUBLE };
     }else{
         throw 'ERROR -> No se puede Dividir: ' + izq.valor + ' con ' + der.valor;
+    }
+}
+
+//FUNCION POTENCIA
+function potencia(izq,der){
+    if(izq.tipo === TIPO_VALOR.ENTERO && der.tipo === TIPO_VALOR.ENTERO){
+        return {valor:(Math.pow(izq.valor,der.valor)), tipo: TIPO_VALOR.ENTERO};
+    }else if((izq.tipo === TIPO_VALOR.ENTERO || izq.tipo === TIPO_VALOR.DOUBLE) && (der.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.DOUBLE)){
+        return {valor:(Math.pow(izq.valor,der.valor)), tipo: TIPO_VALOR.DOUBLE};
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' ^ ' + der.valor;
+    }
+}
+
+//FUNCION MODULO
+function modulo(izq,der){
+    if((izq.tipo === TIPO_VALOR.ENTERO || izq.tipo === TIPO_VALOR.DOUBLE) && (der.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.DOUBLE)){
+        return {valor:(izq.valor%   der.valor), tipo: TIPO_VALOR.DOUBLE};
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' % ' + der.valor;
     }
 }
 
