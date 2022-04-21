@@ -18,7 +18,7 @@
 "//".*                              // comentario simple línea
 [/][*][^*]*[*]+([^/*][^*]*[*]+)*[/] // comentario multiple líneas
 
-\"[^\"]*\"				        { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }
+\"[^\"]*\"				            { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }
 \'(\\(n|\"|\'|\\|t|r)|.)\'			{ yytext = yytext.substr(1,yyleng-2); return 'CARACTER'; }
 
 //Palabras reservadas
@@ -165,7 +165,7 @@ listaid
 expresion
     :MENOS expresion %prec UMENOS	   { $$ = instruccionesAPI.nuevoOperacionUnaria($2, TIPO_OPERACION.NEGATIVO); }
     |expresion MAS expresion           { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.SUMA); }
-    |expresion MENOS expresion         
+    |expresion MENOS expresion         { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.RESTA); }
     |expresion POR expresion               
     |expresion DIVIDIR expresion
     |expresion POTENCIA expresion

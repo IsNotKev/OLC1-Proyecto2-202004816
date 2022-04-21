@@ -24,17 +24,23 @@ class TS{
     }
 
     agregar(id, tipo, valor) {
-        const nuevoSimbolo = crearSimbolo(id, tipo);
-        if(nuevoSimbolo.tipo===valor.tipo){
-            nuevoSimbolo.valor = valor.valor;          
-        }else{
-            if(nuevoSimbolo.tipo === TIPO_VALOR.DOUBLE && valor.tipo === TIPO_VALOR.ENTERO){
-                nuevoSimbolo.valor = valor.valor; 
+        var verificar = this.existe(id);
+        if(!verificar){
+            const nuevoSimbolo = crearSimbolo(id, tipo);
+            if(nuevoSimbolo.tipo===valor.tipo){
+                nuevoSimbolo.valor = valor.valor;          
             }else{
-                throw 'ERROR DE TIPOS -> variable: ' + id + ' tiene tipo: '+ nuevoSimbolo.tipo +' y el valor a asignar es de tipo: '+valor.tipo;
-            }          
+                if(nuevoSimbolo.tipo === TIPO_VALOR.DOUBLE && valor.tipo === TIPO_VALOR.ENTERO){
+                    nuevoSimbolo.valor = valor.valor; 
+                }else{
+                    throw 'ERROR DE TIPOS -> variable: ' + id + ' tiene tipo: '+ nuevoSimbolo.tipo +' y el valor a asignar es de tipo: '+valor.tipo;
+                }          
+            }
+            this._simbolos.push(nuevoSimbolo);
+        }else{
+            throw 'ERROR DE TIPOS -> variable: ' + id + ' Ya Existe.'
         }
-        this._simbolos.push(nuevoSimbolo);
+        
     }
 
     actualizar(id, valor) { //AQUI VAMOS A VALIDAR TIPOS
@@ -60,6 +66,13 @@ class TS{
 
         if (simbolo) return simbolo; //aqui devolvemos el simbolo completo
         else throw 'ERROR: variable: ' + id + ' no ha sido definida';
+    }
+
+    existe(id) {
+        const simbolo = this._simbolos.filter(simbolo => simbolo.id === id)[0];
+
+        if (simbolo) return true; //aqui devolvemos el simbolo completo
+        else return false;
     }
 
     get simbolos() {

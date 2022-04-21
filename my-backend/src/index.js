@@ -54,7 +54,7 @@ app.listen(5000, () => {
 });
 
 
-
+//-------------------------------------------------------------INSTRUCCIONES----------------------------------------------------
 //PROCESANDO FUNCIONES
 function procesarBloque(instrucciones, tablaDeSimbolos) {
     var salida = 'Ejecutando...';
@@ -105,6 +105,10 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
         return suma(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.RESTA){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return resta(valor,valor2);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
         return {valor: expresion.valor, tipo: TIPO_VALOR.CADENA };
     }else if (expresion.tipo === TIPO_VALOR.ENTERO) {
@@ -127,15 +131,15 @@ function procesarDeclaracion(instruccion, tablaDeSimbolos) { //aqui cambiamos pa
     instruccion.identificadores.forEach(identificador=>{
         if(instruccion.valor.tipo === TIPO_VALOR.IDENTIFICADOR){
             nvalor = obtenerValor(instruccion.valor.valor,tablaDeSimbolos);
-            tablaDeSimbolos.agregar(identificador, instruccion.tipo_dato, nvalor);
+            tablaDeSimbolos.agregar(identificador.toLowerCase(), instruccion.tipo_dato, nvalor);
         }else{
-            var v;
-            nvalor = instruccion.valor;
-            if(instruccion.valor.tipo === TIPO_OPERACION.NEGATIVO || instruccion.valor.tipo === TIPO_OPERACION.SUMA){
+            var v = procesarExpresion(instruccion.valor,tablaDeSimbolos);
+            nvalor = instruccionesAPI.nuevoValor(v.valor,v.tipo);
+            /*if(instruccion.valor.tipo === TIPO_OPERACION.NEGATIVO || instruccion.valor.tipo === TIPO_OPERACION.SUMA){
                 v = procesarExpresion(instruccion.valor,tablaDeSimbolos);
                 nvalor = instruccionesAPI.nuevoValor(v.valor,v.tipo);
-            }
-            tablaDeSimbolos.agregar(identificador, instruccion.tipo_dato, nvalor);
+            }*/
+            tablaDeSimbolos.agregar(identificador.toLowerCase(), instruccion.tipo_dato, nvalor);
         }
     });  
 }
@@ -163,10 +167,28 @@ function suma(izq,der){
         sum = obtener_no(izq) + obtener_no(der);
         return {valor: sum, tipo: TIPO_VALOR.ENTERO };
     }else{
-        throw 'ERROR -> No se puede suma: ' + izq.valor + ' con ' + der.valor;
+        throw 'ERROR -> No se puede sumar: ' + izq.valor + ' con ' + der.valor;
     }
 }
 
+//FUNCION RESTA
+function resta(izq,der){
+    var resta;
+    if((izq.tipo === TIPO_VALOR.CADENA || der.tipo === TIPO_VALOR.CADENA)||(izq.tipo === TIPO_VALOR.CARACTER && der.tipo === TIPO_VALOR.CARACTER)){
+        throw 'ERROR -> No se puede restar: ' + izq.valor + ' con ' + der.valor;
+    }else if(izq.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.DOUBLE){
+        resta = obtener_no(izq) - obtener_no(der);
+        return {valor: resta, tipo: TIPO_VALOR.DOUBLE }; 
+    }else if(izq.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.ENTERO){
+        resta = obtener_no(izq) - obtener_no(der);
+        return {valor: resta, tipo: TIPO_VALOR.ENTERO };
+    }else{
+        throw 'ERROR -> No se puede restar: ' + izq.valor + ' con ' + der.valor;
+    }
+}
+
+
+//RETORNA VALOR ENTERO DE TRUE,FALSE Y CHAR
 function obtener_no(val){
     if(val.tipo === TIPO_VALOR.BOOLEAN){
         if(val.valor == 'true'){
