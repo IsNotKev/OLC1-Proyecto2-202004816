@@ -113,6 +113,10 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
         return multiplicar(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.DIVISION){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return dividir(valor,valor2);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
         return {valor: expresion.valor, tipo: TIPO_VALOR.CADENA };
     }else if (expresion.tipo === TIPO_VALOR.ENTERO) {
@@ -204,6 +208,22 @@ function multiplicar(izq,der){
         return {valor: res, tipo: TIPO_VALOR.ENTERO };
     }else{
         throw 'ERROR -> No se puede multiplicar: ' + izq.valor + ' con ' + der.valor;
+    }
+}
+
+//FUNCION DIVIDIR
+function dividir(izq,der){
+    var res;
+    if((izq.tipo === TIPO_VALOR.CADENA || der.tipo === TIPO_VALOR.CADENA)||(izq.tipo === TIPO_VALOR.CARACTER && der.tipo === TIPO_VALOR.CARACTER)){
+        throw 'ERROR -> No se puede Dividir: ' + izq.valor + ' con ' + der.valor;
+    }else if((izq.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.DOUBLE) && !(izq.tipo === TIPO_VALOR.BOOLEAN || der.tipo === TIPO_VALOR.BOOLEAN)){
+        res = obtener_no(izq)/obtener_no(der);
+        return {valor: res, tipo: TIPO_VALOR.DOUBLE }; 
+    }else if((izq.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.ENTERO)&& !(izq.tipo === TIPO_VALOR.BOOLEAN || der.tipo === TIPO_VALOR.BOOLEAN)){
+        res = obtener_no(izq)/obtener_no(der);
+        return {valor: res, tipo: TIPO_VALOR.DOUBLE };
+    }else{
+        throw 'ERROR -> No se puede Dividir: ' + izq.valor + ' con ' + der.valor;
     }
 }
 
