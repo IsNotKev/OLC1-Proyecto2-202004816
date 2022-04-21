@@ -166,7 +166,7 @@ expresion
     :MENOS expresion %prec UMENOS	   { $$ = instruccionesAPI.nuevoOperacionUnaria($2, TIPO_OPERACION.NEGATIVO); }
     |expresion MAS expresion           { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.SUMA); }
     |expresion MENOS expresion         { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.RESTA); }
-    |expresion POR expresion               
+    |expresion POR expresion           { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MULTIPLICACION); }   
     |expresion DIVIDIR expresion
     |expresion POTENCIA expresion
     |expresion MODULO expresion        

@@ -136,6 +136,9 @@ break;
 case 20:
  this.$ = instruccionesAPI.nuevoOperacionBinaria($$[$0-2], $$[$0], TIPO_OPERACION.RESTA); 
 break;
+case 21:
+ this.$ = instruccionesAPI.nuevoOperacionBinaria($$[$0-2], $$[$0], TIPO_OPERACION.MULTIPLICACION); 
+break;
 case 31:
  this.$= $$[$0-1] 
 break;
