@@ -163,19 +163,19 @@ listaid
 ;
 
 expresion
-    :MENOS expresion %prec UMENOS	   { $$ = instruccionesAPI.nuevoOperacionUnaria($2, TIPO_OPERACION.NEGATIVO); }
-    |expresion MAS expresion           { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.SUMA); }
-    |expresion MENOS expresion         { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.RESTA); }
-    |expresion POR expresion           { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MULTIPLICACION); }   
-    |expresion DIVIDIR expresion       { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.DIVISION); }
-    |expresion POTENCIA expresion      { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.POTENCIA); }
-    |expresion MODULO expresion        { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MODULO); }
-    |expresion D_IGUAL expresion         
-    |expresion DIFERENTE expresion       
-    |expresion MAYOR_IGUAL expresion    
-    |expresion MENOR_IGUAL expresion    
-    |expresion MAYOR expresion                   
-    |expresion MENOR expresion          
+    :MENOS expresion %prec UMENOS	    { $$ = instruccionesAPI.nuevoOperacionUnaria($2, TIPO_OPERACION.NEGATIVO); }
+    |expresion MAS expresion            { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.SUMA); }
+    |expresion MENOS expresion          { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.RESTA); }
+    |expresion POR expresion            { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MULTIPLICACION); }   
+    |expresion DIVIDIR expresion        { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.DIVISION); }
+    |expresion POTENCIA expresion       { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.POTENCIA); }
+    |expresion MODULO expresion         { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MODULO); }
+    |expresion D_IGUAL expresion        { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.DOBLE_IGUAL); } 
+    |expresion DIFERENTE expresion      { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.DIFERENTE); } 
+    |expresion MAYOR_IGUAL expresion    { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MAYOR_IGUAL); } 
+    |expresion MENOR_IGUAL expresion    { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MENOR_IGUAL); } 
+    |expresion MAYOR expresion          { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MAYOR_QUE); }         
+    |expresion MENOR expresion          { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MENOR_QUE); }
     |PAR_ABRE expresion PAR_CIERRA      { $$= $2 }
 	|ENTERO	                            { $$ = instruccionesAPI.nuevoValor(Number($1), TIPO_VALOR.ENTERO); }					
 	|CADENA                             { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.CADENA); }

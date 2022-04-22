@@ -125,6 +125,30 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
         return modulo(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.DOBLE_IGUAL){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return dobleigual(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.DIFERENTE){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return diferente(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.MAYOR_QUE){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return mayorque(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.MENOR_QUE){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return menorque(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.MAYOR_IGUAL){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return mayorigual(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.MENOR_IGUAL){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return menorigual(valor,valor2);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
         return {valor: expresion.valor, tipo: TIPO_VALOR.CADENA };
     }else if (expresion.tipo === TIPO_VALOR.ENTERO) {
@@ -267,5 +291,63 @@ function obtener_no(val){
         return val.valor.charCodeAt()
     }else{
         return val.valor;
+    }
+}
+
+//FUNCION DOBLE IGUAL
+function dobleigual(izq,der){
+    if((izq.tipo === TIPO_VALOR.ENTERO || izq.tipo === TIPO_VALOR.DOUBLE || izq.tipo === TIPO_VALOR.CARACTER) && (der.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.CARACTER)){
+        return {valor:(obtener_no(izq) == obtener_no(der)).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
+    }else if(izq.tipo === der.tipo){
+        return {valor:(izq.valor == der.valor).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' == ' + der.valor;
+    }
+}
+
+//FUNCION DIFERENTE DE
+function diferente(izq,der){
+    if((izq.tipo === TIPO_VALOR.ENTERO || izq.tipo === TIPO_VALOR.DOUBLE || izq.tipo === TIPO_VALOR.CARACTER) && (der.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.CARACTER)){
+        return {valor:(obtener_no(izq) != obtener_no(der)).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
+    }else if(izq.tipo === der.tipo){
+        return {valor:(izq.valor != der.valor).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' != ' + der.valor;
+    }
+}
+
+//FUNCION MENORQUE
+function menorque(izq,der){
+    if((izq.tipo === TIPO_VALOR.ENTERO || izq.tipo === TIPO_VALOR.DOUBLE || izq.tipo === TIPO_VALOR.CARACTER) && (der.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.CARACTER)){
+        return {valor:(obtener_no(izq) < obtener_no(der)).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' < ' + der.valor;
+    }
+}
+
+//FUNCION MAYORQUE
+function mayorque(izq,der){
+    if((izq.tipo === TIPO_VALOR.ENTERO || izq.tipo === TIPO_VALOR.DOUBLE || izq.tipo === TIPO_VALOR.CARACTER) && (der.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.CARACTER)){
+        return {valor:(obtener_no(izq) > obtener_no(der)).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' > ' + der.valor;
+    }
+}
+
+//FUNCION MENOR O IGUAL
+function menorigual(izq,der){
+    if((izq.tipo === TIPO_VALOR.ENTERO || izq.tipo === TIPO_VALOR.DOUBLE || izq.tipo === TIPO_VALOR.CARACTER) && (der.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.CARACTER)){
+        return {valor:(obtener_no(izq) <= obtener_no(der)).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' <= ' + der.valor;
+    }
+}
+
+//FUNCION MAYOR O IGUAL
+function mayorigual(izq,der){
+    if((izq.tipo === TIPO_VALOR.ENTERO || izq.tipo === TIPO_VALOR.DOUBLE || izq.tipo === TIPO_VALOR.CARACTER) && (der.tipo === TIPO_VALOR.ENTERO || der.tipo === TIPO_VALOR.DOUBLE || der.tipo === TIPO_VALOR.CARACTER)){
+        return {valor:(obtener_no(izq) >= obtener_no(der)).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' >= ' + der.valor;
     }
 }
