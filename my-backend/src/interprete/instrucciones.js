@@ -15,6 +15,8 @@ const TIPO_OPERACION = {
 	POTENCIA:		'OP_POTENCIA',
 	MODULO:			'OP_MODULO',
 	NEGATIVO:       'OP_NEGATIVO',
+	INCREMENTO:		'OP_INCREMENTO',
+	DECREMENTO: 	'OP_DECREMENTO',
 
 	MAYOR_QUE:      'OP_MAYOR_QUE',
 	MENOR_QUE:      'OP_MENOR_QUE',
@@ -89,7 +91,7 @@ const instruccionesAPI = {
     nuevoAsignacion: function(identificador, valor) {
 		return {
 			tipo: TIPO_INSTRUCCION.ASIGNACION,
-			identificador: identificador,
+			identificadores: identificador,
 			valor: valor
 		}
 	},

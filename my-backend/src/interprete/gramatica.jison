@@ -64,6 +64,8 @@
 
 
 //Aritmetica
+"++"                    return "INCREMENTO";
+"--"                    return "DECREMENTO";
 "+"                     return "MAS";
 "-"                     return "MENOS";
 "*"                     return "POR";
@@ -155,6 +157,7 @@ declaracion
     |STRING listaid PUNTOYCOMA                    { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.CADENA,instruccionesAPI.nuevoValor("", TIPO_VALOR.CADENA)); }
     |BOOLEAN listaid IGUAL expresion PUNTOYCOMA   { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.BOOLEAN,$4); }
     |BOOLEAN listaid PUNTOYCOMA                   { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.BOOLEAN,instruccionesAPI.nuevoValor('TRUE', TIPO_VALOR.BOOLEAN)); }
+    |listaid IGUAL expresion PUNTOYCOMA             { $$ = instruccionesAPI.nuevoAsignacion($1,$3); }
 ;
 
 listaid
@@ -162,8 +165,14 @@ listaid
     |IDENTIFICADOR                      {$$=[$1]}
 ;
 
+mmuno
+    :expresion INCREMENTO	            { $$ = instruccionesAPI.nuevoOperacionUnaria($1, TIPO_OPERACION.INCREMENTO); }
+    |expresion DECREMENTO	            { $$ = instruccionesAPI.nuevoOperacionUnaria($1, TIPO_OPERACION.DECREMENTO); }
+;
+
 expresion
     :MENOS expresion %prec UMENOS	    { $$ = instruccionesAPI.nuevoOperacionUnaria($2, TIPO_OPERACION.NEGATIVO); }
+    |mmuno                              { $$=$1; }
     |expresion MAS expresion            { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.SUMA); }
     |expresion MENOS expresion          { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.RESTA); }
     |expresion POR expresion            { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MULTIPLICACION); }   

@@ -49,10 +49,10 @@ class TS{
             if(simbolo.tipo===valor.tipo){
                 simbolo.valor = valor.valor;            
             }else{
-                if(nuevoSimbolo.tipo === TIPO_VALOR.DOUBLE && valor.tipo === TIPO_VALOR.ENTERO){
-                    nuevoSimbolo.valor = valor.valor; 
+                if(simbolo.tipo === TIPO_VALOR.DOUBLE && valor.tipo === TIPO_VALOR.ENTERO){
+                    simbolo.valor = valor.valor; 
                 }else{
-                    throw 'ERROR DE TIPOS -> variable: ' + id + ' tiene tipo: '+ nuevoSimbolo.tipo +' y el valor a asignar es de tipo: '+valor.tipo;
+                    throw 'ERROR DE TIPOS -> variable: ' + id + ' tiene tipo: '+ simbolo.tipo +' y el valor a asignar es de tipo: '+valor.tipo;
                 } 
             }
         }

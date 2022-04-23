@@ -68,6 +68,8 @@ function procesarBloque(instrucciones, tablaDeSimbolos) {
             anterior = false;
         }else if (instruccion.tipo === TIPO_INSTRUCCION.DECLARACION) {
             procesarDeclaracion(instruccion, tablaDeSimbolos);
+        }else if (instruccion.tipo === TIPO_INSTRUCCION.ASIGNACION) {
+            procesarAsignacion(instruccion, tablaDeSimbolos);
         }
     });
     return salida;
@@ -104,10 +106,16 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
         return suma(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.INCREMENTO){
+        const valor = procesarExpresion(expresion.operandoIzq, tablaDeSimbolos);
+        return suma(valor,instruccionesAPI.nuevoValor(1,TIPO_VALOR.ENTERO));
     }else if(expresion.tipo === TIPO_OPERACION.RESTA){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
         return resta(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.DECREMENTO){
+        const valor = procesarExpresion(expresion.operandoIzq, tablaDeSimbolos);
+        return resta(valor,instruccionesAPI.nuevoValor(1,TIPO_VALOR.ENTERO));
     }else if(expresion.tipo === TIPO_OPERACION.MULTIPLICACION){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
@@ -189,6 +197,21 @@ function procesarDeclaracion(instruccion, tablaDeSimbolos) { //aqui cambiamos pa
             var v = procesarExpresion(instruccion.valor,tablaDeSimbolos);
             nvalor = instruccionesAPI.nuevoValor(v.valor,v.tipo);
             tablaDeSimbolos.agregar(identificador.toLowerCase(), instruccion.tipo_dato, nvalor);
+        }
+    });  
+}
+
+//ASIGNACION
+function procesarAsignacion(instruccion, tablaDeSimbolos) { //aqui cambiamos para que acepte el tipo_dato de la declaracion
+    var nvalor;
+    instruccion.identificadores.forEach(identificador=>{
+        if(instruccion.valor.tipo === TIPO_VALOR.IDENTIFICADOR){
+            nvalor = obtenerValor(instruccion.valor.valor,tablaDeSimbolos);
+            tablaDeSimbolos.actualizar(identificador.toLowerCase(), nvalor);
+        }else{
+            var v = procesarExpresion(instruccion.valor,tablaDeSimbolos);
+            nvalor = instruccionesAPI.nuevoValor(v.valor,v.tipo);
+            tablaDeSimbolos.actualizar(identificador.toLowerCase(), nvalor);
         }
     });  
 }
