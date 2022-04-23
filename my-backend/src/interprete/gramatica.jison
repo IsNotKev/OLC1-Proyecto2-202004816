@@ -179,6 +179,8 @@ expresion
     |NOT expresion %prec UNOT           { $$ = instruccionesAPI.nuevoOperacionUnaria($2, TIPO_OPERACION.NOT); }
     |expresion AND expresion            { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.AND); }
     |expresion OR expresion             { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.OR); }
+    |PAR_ABRE nums PAR_CIERRA expresion { $$ = instruccionesAPI.nuevoCasteo($2,$4);} 
+    |TOSTRING PAR_ABRE expresion PAR_CIERRA { $$ = instruccionesAPI.nuevoCasteo(TIPO_VALOR.CADENA,$3);}
     |PAR_ABRE expresion PAR_CIERRA      { $$= $2 }
 	|ENTERO	                            { $$ = instruccionesAPI.nuevoValor(Number($1), TIPO_VALOR.ENTERO); }					
 	|CADENA                             { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.CADENA); }
@@ -186,7 +188,13 @@ expresion
     |DECIMAL                            { $$ = instruccionesAPI.nuevoValor(Number($1), TIPO_VALOR.DOUBLE); }    					
     |TRUE                               { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.BOOLEAN); }                            
     |FALSE                              { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.BOOLEAN); }  
-    |IDENTIFICADOR                      { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.IDENTIFICADOR); }  
+    |IDENTIFICADOR                      { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.IDENTIFICADOR); } 
+;
+
+nums
+    :INT            {$$ = TIPO_VALOR.ENTERO;}
+    |DOUBLE         {$$ = TIPO_VALOR.DOUBLE;}
+    |CHAR           {$$ = TIPO_VALOR.CARACTER;}
 ;
 
 print

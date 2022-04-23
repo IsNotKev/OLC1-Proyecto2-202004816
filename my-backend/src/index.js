@@ -87,7 +87,6 @@ function procesarImprimir(instruccion, tablaDeSimbolos,anterior) {
 //METODO IMPRIMIRLN
 function procesarImprimirLn(instruccion, tablaDeSimbolos) {
     const cadena = procesarExpresion(instruccion.expresion, tablaDeSimbolos).valor;
-    //console.log('> ' + cadena);
     return '\n>>>' + cadena;
 }
 
@@ -160,6 +159,9 @@ function procesarExpresion(expresion,tablaDeSimbolos){
     }else if(expresion.tipo === TIPO_OPERACION.NOT){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         return not(valor);
+    }else if(expresion.tipo === TIPO_OPERACION.CASTEO){
+        var valor = procesarExpresion(expresion.valor,tablaDeSimbolos);        
+        return casteo(expresion.tipo_casteo,valor);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
         return {valor: expresion.valor, tipo: TIPO_VALOR.CADENA };
     }else if (expresion.tipo === TIPO_VALOR.ENTERO) {
@@ -186,10 +188,6 @@ function procesarDeclaracion(instruccion, tablaDeSimbolos) { //aqui cambiamos pa
         }else{
             var v = procesarExpresion(instruccion.valor,tablaDeSimbolos);
             nvalor = instruccionesAPI.nuevoValor(v.valor,v.tipo);
-            /*if(instruccion.valor.tipo === TIPO_OPERACION.NEGATIVO || instruccion.valor.tipo === TIPO_OPERACION.SUMA){
-                v = procesarExpresion(instruccion.valor,tablaDeSimbolos);
-                nvalor = instruccionesAPI.nuevoValor(v.valor,v.tipo);
-            }*/
             tablaDeSimbolos.agregar(identificador.toLowerCase(), instruccion.tipo_dato, nvalor);
         }
     });  
@@ -395,5 +393,29 @@ function not(izq){
         return{valor:(!obtener_bool(izq)).toString().toLowerCase(),tipo: TIPO_VALOR.BOOLEAN}
     }else{
         throw 'ERROR -> No se puede realizar: !' + izq.valor;
+    }
+}
+
+//CASTEO
+
+function casteo(tipo,val){
+    if(tipo === TIPO_VALOR.ENTERO || tipo === TIPO_VALOR.DOUBLE || tipo === TIPO_VALOR.CARACTER){
+        if(val.tipo === TIPO_VALOR.ENTERO || val.tipo === TIPO_VALOR.DOUBLE || val.tipo === TIPO_VALOR.CARACTER){
+            if(tipo === TIPO_VALOR.ENTERO){
+                return {valor: Math.trunc(obtener_no(val)), tipo: TIPO_VALOR.ENTERO};
+            }else if(tipo === TIPO_VALOR.DOUBLE){
+                return {valor: parseFloat(obtener_no(val)), tipo: TIPO_VALOR.DOUBLE};
+            }else if(tipo === TIPO_VALOR.CARACTER && (val.tipo === TIPO_VALOR.ENTERO)){
+                return {valor: String.fromCharCode(val.valor), tipo: TIPO_VALOR.CARACTER};
+            }else{
+                throw 'ERROR -> No se puede realizar casteo';
+            }
+        }else{
+            throw 'ERROR -> No se puede realizar casteo con ' + val.tipo;
+        }
+    }else if(tipo === TIPO_VALOR.CADENA){
+        return {valor: val.valor.toString(), tipo: TIPO_VALOR.CADENA};
+    }else{
+        throw 'ERROR -> No se puede realizar casteo';
     }
 }

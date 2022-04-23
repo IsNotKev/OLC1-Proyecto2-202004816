@@ -25,7 +25,9 @@ const TIPO_OPERACION = {
 
 	AND:  			'OP_AND',
 	OR: 			'OP_OR',
-	NOT:   			'OP_NOT'
+	NOT:   			'OP_NOT',
+
+	CASTEO:			'OP_CASTEO'
 };
 
 const TIPO_INSTRUCCION = {
@@ -91,8 +93,12 @@ const instruccionesAPI = {
 			valor: valor
 		}
 	},
-    nuevoOperador: function(operador){
-		return operador 
+    nuevoCasteo: function(tipo,valor){
+		return {
+			tipo: TIPO_OPERACION.CASTEO,
+			tipo_casteo: tipo,
+			valor: valor
+		} 
 	}
 }
 
