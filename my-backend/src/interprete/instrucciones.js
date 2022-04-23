@@ -23,11 +23,9 @@ const TIPO_OPERACION = {
 	DOBLE_IGUAL:    'OP_DOBLE_IGUAL',
 	DIFERENTE:    	'OP_NO_IGUAL',
 
-	/*AND:  			'OP_AND',
+	AND:  			'OP_AND',
 	OR: 			'OP_OR',
-	NOT:   			'OP_NOT',  	
-
-	CONCATENACION:  'OP_CONCATENACION'*/
+	NOT:   			'OP_NOT'
 };
 
 const TIPO_INSTRUCCION = {

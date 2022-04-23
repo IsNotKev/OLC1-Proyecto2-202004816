@@ -149,6 +149,17 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
         var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
         return menorigual(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.AND){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return and(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.OR){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        var valor2 = procesarExpresion(expresion.operandoDer,tablaDeSimbolos);
+        return or(valor,valor2);
+    }else if(expresion.tipo === TIPO_OPERACION.NOT){
+        var valor = procesarExpresion(expresion.operandoIzq,tablaDeSimbolos);
+        return not(valor);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
         return {valor: expresion.valor, tipo: TIPO_VALOR.CADENA };
     }else if (expresion.tipo === TIPO_VALOR.ENTERO) {
@@ -349,5 +360,40 @@ function mayorigual(izq,der){
         return {valor:(obtener_no(izq) >= obtener_no(der)).toString().toLowerCase(), tipo: TIPO_VALOR.BOOLEAN};
     }else{
         throw 'ERROR -> No se puede realizar: ' + izq.valor + ' >= ' + der.valor;
+    }
+}
+
+function obtener_bool(data){
+    if(data.valor=='true'){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+//FUNCION AND
+function and(izq,der){
+    if(izq.tipo === TIPO_VALOR.BOOLEAN && der.tipo === TIPO_VALOR.BOOLEAN){
+        return{valor:(obtener_bool(izq) && obtener_bool(der)).toString().toLowerCase(),tipo: TIPO_VALOR.BOOLEAN}
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' && ' + der.valor;
+    }
+}
+
+//FUNCION OR
+function or(izq,der){
+    if(izq.tipo === TIPO_VALOR.BOOLEAN && der.tipo === TIPO_VALOR.BOOLEAN){
+        return{valor:(obtener_bool(izq) || obtener_bool(der)).toString().toLowerCase(),tipo: TIPO_VALOR.BOOLEAN}
+    }else{
+        throw 'ERROR -> No se puede realizar: ' + izq.valor + ' || ' + der.valor;
+    }
+}
+
+//FUNCION NOT
+function not(izq){
+    if(izq.tipo === TIPO_VALOR.BOOLEAN){
+        return{valor:(!obtener_bool(izq)).toString().toLowerCase(),tipo: TIPO_VALOR.BOOLEAN}
+    }else{
+        throw 'ERROR -> No se puede realizar: !' + izq.valor;
     }
 }

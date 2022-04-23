@@ -120,7 +120,7 @@
 %left 'MAS' 'MENOS' 
 %left 'POR' 'DIVIDIR'
 %left UMENOS
-%right 'NOT' 
+%left UNOT 
 
 %start ini
 
@@ -176,6 +176,9 @@ expresion
     |expresion MENOR_IGUAL expresion    { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MENOR_IGUAL); } 
     |expresion MAYOR expresion          { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MAYOR_QUE); }         
     |expresion MENOR expresion          { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MENOR_QUE); }
+    |NOT expresion %prec UNOT           { $$ = instruccionesAPI.nuevoOperacionUnaria($2, TIPO_OPERACION.NOT); }
+    |expresion AND expresion            { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.AND); }
+    |expresion OR expresion             { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.OR); }
     |PAR_ABRE expresion PAR_CIERRA      { $$= $2 }
 	|ENTERO	                            { $$ = instruccionesAPI.nuevoValor(Number($1), TIPO_VALOR.ENTERO); }					
 	|CADENA                             { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.CADENA); }
