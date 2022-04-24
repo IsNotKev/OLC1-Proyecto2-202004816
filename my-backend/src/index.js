@@ -76,6 +76,11 @@ function procesarBloque(instrucciones, tablaDeSimbolos, ant) {
             salida += a.salida;
             anterior = a.anterior;
         }
+        else if (instruccion.tipo === TIPO_INSTRUCCION.IF_ELSE) {
+            var a = procesarIfElse(instruccion, tablaDeSimbolos,anterior);
+            salida += a.salida;
+            anterior = a.anterior;
+        }
     });
     return {salida:salida,anterior:anterior};
 }
@@ -461,6 +466,29 @@ function procesarIf(instruccion, tablaDeSimbolos, anterior) {
         }
     }else{
         throw 'ERROR -> Condición if necesita un booleano';
-    }
-    
+    }   
+}
+
+//PROCESAR IF ELSE
+function procesarIfElse(instruccion, tablaDeSimbolos, anterior) {
+    const valorCondicion = procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos);
+    if(valorCondicion.tipo === TIPO_VALOR.BOOLEAN){
+        if (obtener_bool(valorCondicion)) {
+            const tsIf = new TS(tablaDeSimbolos.simbolos);
+            var ss = procesarBloque(instruccion.instruccionesIfVerdadero, tsIf,anterior);
+            return {salida:ss.salida.slice(13), anterior:ss.anterior};
+        }else{
+            const tsIf = new TS(tablaDeSimbolos.simbolos);
+            var ss;
+            if(instruccion.instruccionesIfFalso.tipo === TIPO_INSTRUCCION.IF || instruccion.instruccionesIfFalso.tipo === TIPO_INSTRUCCION.IF_ELSE){
+                ss = procesarBloque([instruccion.instruccionesIfFalso], tsIf,anterior);
+            }else{
+                ss = procesarBloque(instruccion.instruccionesIfFalso, tsIf,anterior);
+            }
+
+            return {salida:ss.salida.slice(13), anterior:ss.anterior};
+        }
+    }else{
+        throw 'ERROR -> Condición if necesita un booleano';
+    }   
 }

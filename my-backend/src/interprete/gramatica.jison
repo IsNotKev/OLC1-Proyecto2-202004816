@@ -148,7 +148,9 @@ inicio
 ;
 
 if
-    :IF PAR_ABRE expresion PAR_CIERRA LLAVE_ABRE instrucciones LLAVE_CIERRA         { $$ = instruccionesAPI.nuevoIf($3,$6);}
+    :IF PAR_ABRE expresion PAR_CIERRA LLAVE_ABRE instrucciones LLAVE_CIERRA                                             { $$ = instruccionesAPI.nuevoIf($3,$6);}
+    |IF PAR_ABRE expresion PAR_CIERRA LLAVE_ABRE instrucciones LLAVE_CIERRA ELSE LLAVE_ABRE instrucciones LLAVE_CIERRA  { $$ = instruccionesAPI.nuevoIfElse($3,$6,$10); }
+    |IF PAR_ABRE expresion PAR_CIERRA LLAVE_ABRE instrucciones LLAVE_CIERRA ELSE if                                     { $$ = instruccionesAPI.nuevoIfElse($3,$6,$9); }
 ;
 
 declaracion
