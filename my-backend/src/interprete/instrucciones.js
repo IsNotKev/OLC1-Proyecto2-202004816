@@ -38,9 +38,9 @@ const TIPO_INSTRUCCION = {
 	//MIENTRAS:		'INSTR_MIENTRAS',
 	DECLARACION:	'INSTR_DECLARACION',
 	ASIGNACION:		'INSTR_ASIGANCION',
-	/*IF:				'INSTR_IF',
+	IF:				'INSTR_IF',
 	IF_ELSE:		'INSTR_ELSE',
-	PARA: 			'INST_PARA',
+	/*PARA: 			'INST_PARA',
 	SWITCH:			'SWITCH',
 	SWITCH_OP:		'SWITCH_OP',
 	SWITCH_DEF:		'SWITCH_DEF',
@@ -101,6 +101,21 @@ const instruccionesAPI = {
 			tipo_casteo: tipo,
 			valor: valor
 		} 
+	},
+	nuevoIf: function(expresionLogica, instrucciones) {
+		return {
+			tipo: TIPO_INSTRUCCION.IF,
+			expresionLogica: expresionLogica,
+			instrucciones: instrucciones
+		}
+	},
+	nuevoIfElse: function(expresionLogica, instruccionesIfVerdadero, instruccionesIfFalso) {
+		return {
+			tipo: TIPO_INSTRUCCION.IF_ELSE,
+			expresionLogica: expresionLogica,
+			instruccionesIfVerdadero: instruccionesIfVerdadero,
+			instruccionesIfFalso: instruccionesIfFalso
+		}
 	}
 }
 

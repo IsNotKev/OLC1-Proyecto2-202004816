@@ -11,6 +11,7 @@ app.use(express.json());
 var fs = require('fs'); 
 var parser = require('./interprete/gramatica');
 const exp = require('constants');
+const { strictEqual } = require('assert');
 const TIPO_INSTRUCCION = require('./interprete/instrucciones').TIPO_INSTRUCCION;
 const TIPO_OPERACION = require('./interprete/instrucciones').TIPO_OPERACION;
 const TIPO_VALOR = require('./interprete/instrucciones').TIPO_VALOR;
@@ -40,7 +41,7 @@ app.post('/ejecutar', function (req, res){
     }
 
     const tsGlobal = new TS([]);
-    var respuesta = procesarBloque(ast, tsGlobal);
+    var respuesta = procesarBloque(ast, tsGlobal, true).salida;
 
     //respuesta
     res.json({
@@ -56,9 +57,9 @@ app.listen(5000, () => {
 
 //-------------------------------------------------------------INSTRUCCIONES----------------------------------------------------
 //PROCESANDO FUNCIONES
-function procesarBloque(instrucciones, tablaDeSimbolos) {
+function procesarBloque(instrucciones, tablaDeSimbolos, ant) {
     var salida = 'Ejecutando...';
-    var anterior = true;
+    var anterior = ant;
     instrucciones.forEach(instruccion => {
         if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIRLN) {
             salida += procesarImprimirLn(instruccion, tablaDeSimbolos);
@@ -70,9 +71,13 @@ function procesarBloque(instrucciones, tablaDeSimbolos) {
             procesarDeclaracion(instruccion, tablaDeSimbolos);
         }else if (instruccion.tipo === TIPO_INSTRUCCION.ASIGNACION) {
             procesarAsignacion(instruccion, tablaDeSimbolos);
+        }else if (instruccion.tipo === TIPO_INSTRUCCION.IF) {
+            var a = procesarIf(instruccion, tablaDeSimbolos,anterior);
+            salida += a.salida;
+            anterior = a.anterior;
         }
     });
-    return salida;
+    return {salida:salida,anterior:anterior};
 }
 
 //METODO IMPRIMIR
@@ -441,4 +446,21 @@ function casteo(tipo,val){
     }else{
         throw 'ERROR -> No se puede realizar casteo';
     }
+}
+
+//PROCESAR IF
+function procesarIf(instruccion, tablaDeSimbolos, anterior) {
+    const valorCondicion = procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos);
+    if(valorCondicion.tipo === TIPO_VALOR.BOOLEAN){
+        if (obtener_bool(valorCondicion)) {
+            const tsIf = new TS(tablaDeSimbolos.simbolos);
+            var ss = procesarBloque(instruccion.instrucciones, tsIf,anterior);
+            return {salida:ss.salida.slice(13), anterior:ss.anterior};
+        }else{
+            return {salida:"", anterior:anterior}
+        }
+    }else{
+        throw 'ERROR -> Condición if necesita un booleano';
+    }
+    
 }
