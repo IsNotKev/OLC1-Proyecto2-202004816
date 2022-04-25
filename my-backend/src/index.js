@@ -180,6 +180,8 @@ function procesarExpresion(expresion,tablaDeSimbolos){
     }else if(expresion.tipo === TIPO_OPERACION.CASTEO){
         var valor = procesarExpresion(expresion.valor,tablaDeSimbolos);        
         return casteo(expresion.tipo_casteo,valor);
+    }else if(expresion.tipo === TIPO_OPERACION.TERNARIO){        
+        return ternario(expresion,tablaDeSimbolos);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
         return {valor: expresion.valor, tipo: TIPO_VALOR.CADENA };
     }else if (expresion.tipo === TIPO_VALOR.ENTERO) {
@@ -491,4 +493,18 @@ function procesarIfElse(instruccion, tablaDeSimbolos, anterior) {
     }else{
         throw 'ERROR -> Condición if necesita un booleano';
     }   
+}
+
+//OPERADOR TERNARIO
+function ternario(instruccion , tablaDeSimbolos){
+    const valorCondicion = procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos);
+    if(valorCondicion.tipo === TIPO_VALOR.BOOLEAN){
+        if (obtener_bool(valorCondicion)) {
+            return procesarExpresion(instruccion.instruccionesIfVerdadero,tablaDeSimbolos);
+        }else{
+            return procesarExpresion(instruccion.instruccionesIfFalso,tablaDeSimbolos);
+        }
+    }else{
+        throw 'ERROR -> Condición if necesita un booleano';
+    }
 }

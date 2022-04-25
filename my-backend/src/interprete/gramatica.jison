@@ -114,7 +114,7 @@
 /lex
 
 
-%left 'NOT' 'DOSPUNTOS'
+%left 'NOT' 'INTERROGACION' 'DOSPUNTOS'
 %left 'OR'
 %left 'AND'
 %left 'DIFERENTE' 'D_IGUAL'
@@ -182,6 +182,7 @@ mmuno
 expresion
     :MENOS expresion %prec UMENOS	    { $$ = instruccionesAPI.nuevoOperacionUnaria($2, TIPO_OPERACION.NEGATIVO); }
     |mmuno                              { $$=$1; }
+    |expresion INTERROGACION expresion DOSPUNTOS expresion  { $$ = instruccionesAPI.nuevoOperadorTernario($1,$3,$5); }
     |expresion MAS expresion            { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.SUMA); }
     |expresion MENOS expresion          { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.RESTA); }
     |expresion POR expresion            { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.MULTIPLICACION); }   

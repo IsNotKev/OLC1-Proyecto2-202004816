@@ -28,6 +28,7 @@ const TIPO_OPERACION = {
 	AND:  			'OP_AND',
 	OR: 			'OP_OR',
 	NOT:   			'OP_NOT',
+	TERNARIO:		'OP_TERNARIO',
 
 	CASTEO:			'OP_CASTEO'
 };
@@ -112,6 +113,14 @@ const instruccionesAPI = {
 	nuevoIfElse: function(expresionLogica, instruccionesIfVerdadero, instruccionesIfFalso) {
 		return {
 			tipo: TIPO_INSTRUCCION.IF_ELSE,
+			expresionLogica: expresionLogica,
+			instruccionesIfVerdadero: instruccionesIfVerdadero,
+			instruccionesIfFalso: instruccionesIfFalso
+		}
+	},
+	nuevoOperadorTernario: function(expresionLogica, instruccionesIfVerdadero, instruccionesIfFalso) {
+		return {
+			tipo: TIPO_OPERACION.TERNARIO,
 			expresionLogica: expresionLogica,
 			instruccionesIfVerdadero: instruccionesIfVerdadero,
 			instruccionesIfFalso: instruccionesIfFalso
