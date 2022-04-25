@@ -39,8 +39,8 @@ app.post('/ejecutar', function (req, res){
         console.error(e);
         return;
     }
-
-    const tsGlobal = new TS([]);
+    const tsGlobal = new TS([],[]);
+    guardarFunciones(ast,tsGlobal);
     var respuesta = procesarBloque(ast, tsGlobal, true).salida;
 
     //respuesta
@@ -75,14 +75,28 @@ function procesarBloque(instrucciones, tablaDeSimbolos, ant) {
             var a = procesarIf(instruccion, tablaDeSimbolos,anterior);
             salida += a.salida;
             anterior = a.anterior;
-        }
-        else if (instruccion.tipo === TIPO_INSTRUCCION.IF_ELSE) {
+        }else if (instruccion.tipo === TIPO_INSTRUCCION.IF_ELSE) {
             var a = procesarIfElse(instruccion, tablaDeSimbolos,anterior);
             salida += a.salida;
             anterior = a.anterior;
-        }
+        }else if (instruccion.tipo === TIPO_INSTRUCCION.LLAMAR) {
+            var a = procesarFuncion(instruccion, tablaDeSimbolos,anterior);
+            salida += a.salida.slice(13);
+            anterior = a.anterior;
+        }/*else if (instruccion.tipo === TIPO_INSTRUCCION.BREAK) {
+            return {salida:salida,anterior:anterior};
+        }*/
     });
     return {salida:salida,anterior:anterior};
+}
+
+//GUARDAR FUNCIONES
+function guardarFunciones(instrucciones,tablaDeSimbolos){
+    instrucciones.forEach(instruccion => {
+        if(instruccion.tipo === TIPO_INSTRUCCION.METODO){
+            tablaDeSimbolos.agregarFuncion(instruccion.identificador, instruccion.parametros, instruccion.tipo, instruccion.instrucciones);
+        }
+    });
 }
 
 //METODO IMPRIMIR
@@ -460,7 +474,7 @@ function procesarIf(instruccion, tablaDeSimbolos, anterior) {
     const valorCondicion = procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos);
     if(valorCondicion.tipo === TIPO_VALOR.BOOLEAN){
         if (obtener_bool(valorCondicion)) {
-            const tsIf = new TS(tablaDeSimbolos.simbolos);
+            const tsIf = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
             var ss = procesarBloque(instruccion.instrucciones, tsIf,anterior);
             return {salida:ss.salida.slice(13), anterior:ss.anterior};
         }else{
@@ -476,11 +490,11 @@ function procesarIfElse(instruccion, tablaDeSimbolos, anterior) {
     const valorCondicion = procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos);
     if(valorCondicion.tipo === TIPO_VALOR.BOOLEAN){
         if (obtener_bool(valorCondicion)) {
-            const tsIf = new TS(tablaDeSimbolos.simbolos);
+            const tsIf = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
             var ss = procesarBloque(instruccion.instruccionesIfVerdadero, tsIf,anterior);
             return {salida:ss.salida.slice(13), anterior:ss.anterior};
         }else{
-            const tsIf = new TS(tablaDeSimbolos.simbolos);
+            const tsIf = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
             var ss;
             if(instruccion.instruccionesIfFalso.tipo === TIPO_INSTRUCCION.IF || instruccion.instruccionesIfFalso.tipo === TIPO_INSTRUCCION.IF_ELSE){
                 ss = procesarBloque([instruccion.instruccionesIfFalso], tsIf,anterior);
@@ -506,5 +520,31 @@ function ternario(instruccion , tablaDeSimbolos){
         }
     }else{
         throw 'ERROR -> Condición if necesita un booleano';
+    }
+}
+
+//PROCESANDO FUNCION
+function procesarFuncion(instruccion, tablaDeSimbolos, anterior){
+    const sym = tablaDeSimbolos.obtenerFuncion(instruccion.identificador);
+    if(sym){    
+        if(instruccion.parametros.length === sym.parametros.length){
+            const tsFunction = new TS([],[]);
+            for (let index = 0; index < sym.parametros.length; index++) {
+                if(instruccion.parametros[index].tipo === TIPO_VALOR.IDENTIFICADOR){
+                    tsFunction.agregar((sym.parametros[index].identificador).toLowerCase(), sym.parametros[index].tipo_dato,obtenerValor(instruccion.parametros[index].valor,tablaDeSimbolos));
+                }else{
+                    var v = procesarExpresion(instruccion.parametros[index],tablaDeSimbolos);
+                    nvalor = instruccionesAPI.nuevoValor(v.valor,v.tipo);
+                    tsFunction.agregar((sym.parametros[index].identificador).toLowerCase(), sym.parametros[index].tipo_dato,nvalor);
+                }                
+            }
+
+            return procesarBloque(sym.instrucciones,tsFunction,anterior);
+
+        }else{
+            throw 'ERROR -> Cantidad de parametros incorrectos.';
+        }
+    }else{
+        throw 'ERROR -> Funcion No Existe';
     }
 }

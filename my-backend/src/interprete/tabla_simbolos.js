@@ -17,10 +17,20 @@ function crearSimbolo(id, tipo, valor) {
     }
 }
 
+function crearFuncion(id,parametros,tipo,instrucciones){
+    return {
+        id: id,
+        parametros: parametros,
+        tipo: tipo,
+        instrucciones: instrucciones
+    }
+}
+
 class TS{
 
-    constructor (simbolos) {
+    constructor (simbolos,funciones) {
         this._simbolos = simbolos;
+        this._funciones = funciones;
     }
 
     agregar(id, tipo, valor) {
@@ -71,12 +81,40 @@ class TS{
     existe(id) {
         const simbolo = this._simbolos.filter(simbolo => simbolo.id === id)[0];
 
-        if (simbolo) return true; //aqui devolvemos el simbolo completo
+        if (simbolo) return true;
         else return false;
+    }
+
+    existeFuncion(id){
+        const funcion = this._funciones.filter(funcion => funcion.id === id)[0];
+
+        if (funcion) return true;
+        else return false;
+    }
+
+    agregarFuncion(id,parametros,tipo,instrucciones){
+        var verificar = this.existe(id);
+        if(!verificar){
+            const nuevaFuncion = crearFuncion(id,parametros,tipo,instrucciones);
+            this._funciones.push(nuevaFuncion);
+        }else{
+            throw 'ERROR DE TIPOS -> funcion: ' + id + ' Ya Existe.'
+        }
+    }
+
+    obtenerFuncion(id) {
+        const funcion = this._funciones.filter(funcion => funcion.id === id)[0];
+
+        if (funcion) return funcion; //aqui devolvemos el simbolo completo
+        else throw 'ERROR: funcion: ' + id + ' no ha sido definida';
     }
 
     get simbolos() {
         return this._simbolos;
+    }
+
+    get funciones() {
+        return this._funciones;
     }
 
 }

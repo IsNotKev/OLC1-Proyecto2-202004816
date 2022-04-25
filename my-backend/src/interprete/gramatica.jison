@@ -61,6 +61,7 @@
 "tostring"              return 'TOSTRING';
 "tochararray"           return 'TOCHARARRAY';
 "run"                   return 'RUN';
+"void"                  return 'VOID';
 
 
 //Aritmetica
@@ -114,7 +115,7 @@
 /lex
 
 
-%left 'NOT' 'INTERROGACION' 'DOSPUNTOS'
+%left 'NOT' 'INTERROGACION' 'DOSPUNTOS' 'COMA'
 %left 'OR'
 %left 'AND'
 %left 'DIFERENTE' 'D_IGUAL'
@@ -145,12 +146,54 @@ inicio
     :declaracion
     |print
     |if
+    |BREAK PUNTOYCOMA                                               { $$ = instruccionesAPI.nuevoBreak(); }
+    |metodo
+    |llamado
+;
+
+llamado
+    :IDENTIFICADOR PAR_ABRE pp PAR_CIERRA PUNTOYCOMA                { $$ = instruccionesAPI.nuevoLlamar($1,$3); }
+    |IDENTIFICADOR PAR_ABRE PAR_CIERRA PUNTOYCOMA                   { $$ = instruccionesAPI.nuevoLlamar($1,[]); }
+;
+
+pp
+    : pp COMA expresion             { $1.push($3); $$ = $1; }
+    | expresion                     { $$ = [$1] }
+;
+
+metodo
+    :IDENTIFICADOR pars DOSPUNTOS VOID statement        { $$ = instruccionesAPI.nuevoMetodo($1,$2,$5,TIPO_VALOR.VOID); }    
+    |IDENTIFICADOR pars statement                       { $$ = instruccionesAPI.nuevoMetodo($1,$2,$3,TIPO_VALOR.VOID); } 
+    |IDENTIFICADOR pars DOSPUNTOS tipos statement       { $$ = instruccionesAPI.nuevoMetodo($1,$2,$5,$4); }
+;
+
+pars
+    : PAR_ABRE parametros PAR_CIERRA        {$$ = $2;}
+    | PAR_ABRE PAR_CIERRA                   {$$ = [];}
+;
+
+parametros
+    : parametros COMA tipos IDENTIFICADOR   { $1.push(instruccionesAPI.nuevoParametro($3,$4)); $$=$1; }
+    | tipos IDENTIFICADOR                   { $$ = [instruccionesAPI.nuevoParametro($1,$2)]; }          
+;
+
+tipos
+    : INT                   { $$ = TIPO_VALOR.ENTERO; }
+    | DOUBLE                { $$ = TIPO_VALOR.DOUBLE; }
+    | CHAR                  { $$ = TIPO_VALOR.CARACTER; }
+    | STRING                { $$ = TIPO_VALOR.CADENA; }
+    | BOOLEAN               { $$ = TIPO_VALOR.BOOLEAN; }
 ;
 
 if
-    :IF PAR_ABRE expresion PAR_CIERRA LLAVE_ABRE instrucciones LLAVE_CIERRA                                             { $$ = instruccionesAPI.nuevoIf($3,$6);}
-    |IF PAR_ABRE expresion PAR_CIERRA LLAVE_ABRE instrucciones LLAVE_CIERRA ELSE LLAVE_ABRE instrucciones LLAVE_CIERRA  { $$ = instruccionesAPI.nuevoIfElse($3,$6,$10); }
-    |IF PAR_ABRE expresion PAR_CIERRA LLAVE_ABRE instrucciones LLAVE_CIERRA ELSE if                                     { $$ = instruccionesAPI.nuevoIfElse($3,$6,$9); }
+    :IF PAR_ABRE expresion PAR_CIERRA statement                                             { $$ = instruccionesAPI.nuevoIf($3,$5);}
+    |IF PAR_ABRE expresion PAR_CIERRA statement ELSE statement                              { $$ = instruccionesAPI.nuevoIfElse($3,$5,$7); }
+    |IF PAR_ABRE expresion PAR_CIERRA statement ELSE if                                     { $$ = instruccionesAPI.nuevoIfElse($3,$5,$7); }
+;
+
+statement
+    : LLAVE_ABRE instrucciones LLAVE_CIERRA         { $$ = $2; }
+    | LLAVE_ABRE LLAVE_CIERRA                       { $$ = []; }
 ;
 
 declaracion

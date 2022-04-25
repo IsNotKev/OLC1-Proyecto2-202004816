@@ -4,7 +4,8 @@ const TIPO_VALOR = {
 	IDENTIFICADOR:  2,
 	CADENA:         3,
 	CARACTER:		4,
-	BOOLEAN:		5
+	BOOLEAN:		5,
+	VOID:			6
 }
 
 const TIPO_OPERACION = {
@@ -41,11 +42,15 @@ const TIPO_INSTRUCCION = {
 	ASIGNACION:		'INSTR_ASIGANCION',
 	IF:				'INSTR_IF',
 	IF_ELSE:		'INSTR_ELSE',
+	BREAK:			'INSTR_BREAK',
 	/*PARA: 			'INST_PARA',
 	SWITCH:			'SWITCH',
 	SWITCH_OP:		'SWITCH_OP',
 	SWITCH_DEF:		'SWITCH_DEF',
 	ASIGNACION_SIMPLIFICADA: 'ASIGNACION_SIMPLIFICADA'*/
+	METODO:			'INSTR_METODO',
+	PARAMETRO:		'INSTR_PARAMETRO',
+	LLAMAR:    		'INSTR_LLAMAR'
 }
 
 function nuevaOperacion(operandoIzq, operandoDer, tipo) {
@@ -124,6 +129,34 @@ const instruccionesAPI = {
 			expresionLogica: expresionLogica,
 			instruccionesIfVerdadero: instruccionesIfVerdadero,
 			instruccionesIfFalso: instruccionesIfFalso
+		}
+	},
+	nuevoBreak: function(){
+		return{
+			tipo: TIPO_INSTRUCCION.BREAK
+		}
+	},
+	nuevoParametro: function(tipo,identificador){
+		return{
+			tipo: TIPO_INSTRUCCION.PARAMETRO,
+			tipo_dato: tipo,
+			identificador:identificador
+		}
+	},
+	nuevoMetodo: function(identificador,parametros, instrucciones, tipo){
+		return{
+			tipo: TIPO_INSTRUCCION.METODO,
+			identificador:identificador,
+			parametros: parametros,
+			instrucciones: instrucciones,
+			tipo_dato: tipo
+		}
+	},
+	nuevoLlamar: function(id,params){
+		return{
+			tipo: TIPO_INSTRUCCION.LLAMAR,
+			identificador: id,
+			parametros: params
 		}
 	}
 }
