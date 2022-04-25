@@ -243,6 +243,9 @@ expresion
     |expresion OR expresion             { $$ = instruccionesAPI.nuevoOperacionBinaria($1, $3, TIPO_OPERACION.OR); }
     |PAR_ABRE nums PAR_CIERRA expresion { $$ = instruccionesAPI.nuevoCasteo($2,$4);} 
     |TOSTRING PAR_ABRE expresion PAR_CIERRA { $$ = instruccionesAPI.nuevoCasteo(TIPO_VALOR.CADENA,$3);}
+    |TOLOWER PAR_ABRE expresion PAR_CIERRA  { $$ = instruccionesAPI.nuevoToLower($3); }
+    |TOUPPER PAR_ABRE expresion PAR_CIERRA  { $$ = instruccionesAPI.nuevoToUpper($3); }
+    |ROUND PAR_ABRE expresion PAR_CIERRA    { $$ = instruccionesAPI.nuevoRound($3); }
     |PAR_ABRE expresion PAR_CIERRA      { $$= $2 }
 	|ENTERO	                            { $$ = instruccionesAPI.nuevoValor(Number($1), TIPO_VALOR.ENTERO); }					
 	|CADENA                             { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.CADENA); }

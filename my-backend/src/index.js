@@ -94,25 +94,45 @@ function procesarBloque(instrucciones, tablaDeSimbolos, ant) {
 function guardarFunciones(instrucciones,tablaDeSimbolos){
     instrucciones.forEach(instruccion => {
         if(instruccion.tipo === TIPO_INSTRUCCION.METODO){
-            tablaDeSimbolos.agregarFuncion(instruccion.identificador, instruccion.parametros, instruccion.tipo, instruccion.instrucciones);
+            tablaDeSimbolos.agregarFuncion((instruccion.identificador).toLowerCase(), instruccion.parametros, instruccion.tipo, instruccion.instrucciones);
         }
     });
 }
 
 //METODO IMPRIMIR
 function procesarImprimir(instruccion, tablaDeSimbolos,anterior) {
-    const cadena = procesarExpresion(instruccion.expresion, tablaDeSimbolos).valor;
+    var cadena = procesarExpresion(instruccion.expresion, tablaDeSimbolos);  
+    if(cadena.tipo === TIPO_VALOR.CADENA){
+        cadena = cadena.valor.replace('\\\\','\\');
+        cadena = cadena.replace('\\n','\n');
+        cadena = cadena.replace('\\\'','\'');
+        cadena = cadena.replace('\\t','\t');
+        cadena = cadena.replace('\\r','\r');
+        cadena = cadena.replace('\\\"','\"');
+    }else{
+        cadena = cadena.valor;
+    }
+
     if(anterior){
         return '\n>>>' + cadena;
     }else{
         return cadena
-    }
-    
+    }  
 }
 
 //METODO IMPRIMIRLN
 function procesarImprimirLn(instruccion, tablaDeSimbolos) {
-    const cadena = procesarExpresion(instruccion.expresion, tablaDeSimbolos).valor;
+    var cadena = procesarExpresion(instruccion.expresion, tablaDeSimbolos);  
+    if(cadena.tipo === TIPO_VALOR.CADENA){
+        cadena = cadena.valor.replace('\\\\','\\');
+        cadena = cadena.replace('\\n','\n');
+        cadena = cadena.replace('\\\'','\'');
+        cadena = cadena.replace('\\t','\t');
+        cadena = cadena.replace('\\r','\r');
+        cadena = cadena.replace('\\\"','\"');
+    }else{
+        cadena = cadena.valor;
+    }
     return '\n>>>' + cadena;
 }
 
@@ -194,6 +214,27 @@ function procesarExpresion(expresion,tablaDeSimbolos){
     }else if(expresion.tipo === TIPO_OPERACION.CASTEO){
         var valor = procesarExpresion(expresion.valor,tablaDeSimbolos);        
         return casteo(expresion.tipo_casteo,valor);
+    }else if(expresion.tipo === TIPO_OPERACION.TOLOWER){
+        var valor = procesarExpresion(expresion.cadena,tablaDeSimbolos);        
+        if(valor.tipo === TIPO_VALOR.CADENA){
+            return{valor: (valor.valor).toLowerCase(),tipo:TIPO_VALOR.CADENA}
+        }else{
+            throw 'ERROR -> NO SE PUEDE PONER EN MINUSCULAS'
+        }
+    }else if(expresion.tipo === TIPO_OPERACION.TOUPPER){
+        var valor = procesarExpresion(expresion.cadena,tablaDeSimbolos);        
+        if(valor.tipo === TIPO_VALOR.CADENA){
+            return{valor: (valor.valor).toUpperCase(),tipo:TIPO_VALOR.CADENA}
+        }else{
+            throw 'ERROR -> NO SE PUEDE PONER EN MAYUSCULAS'
+        }
+    }else if(expresion.tipo === TIPO_OPERACION.ROUND){
+        var valor = procesarExpresion(expresion.expresion,tablaDeSimbolos);        
+        if(valor.tipo === TIPO_VALOR.ENTERO || valor.tipo === TIPO_VALOR.DOUBLE){
+            return{valor: Math.round(valor.valor),tipo:TIPO_VALOR.ENTERO}
+        }else{
+            throw 'ERROR -> NO SE PUEDE REDONDEAR'
+        }
     }else if(expresion.tipo === TIPO_OPERACION.TERNARIO){        
         return ternario(expresion,tablaDeSimbolos);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
@@ -528,7 +569,7 @@ function procesarFuncion(instruccion, tablaDeSimbolos, anterior){
     const sym = tablaDeSimbolos.obtenerFuncion(instruccion.identificador);
     if(sym){    
         if(instruccion.parametros.length === sym.parametros.length){
-            const tsFunction = new TS([],[]);
+            const tsFunction = new TS([],tablaDeSimbolos.funciones);
             for (let index = 0; index < sym.parametros.length; index++) {
                 if(instruccion.parametros[index].tipo === TIPO_VALOR.IDENTIFICADOR){
                     tsFunction.agregar((sym.parametros[index].identificador).toLowerCase(), sym.parametros[index].tipo_dato,obtenerValor(instruccion.parametros[index].valor,tablaDeSimbolos));

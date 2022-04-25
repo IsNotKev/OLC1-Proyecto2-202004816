@@ -31,7 +31,10 @@ const TIPO_OPERACION = {
 	NOT:   			'OP_NOT',
 	TERNARIO:		'OP_TERNARIO',
 
-	CASTEO:			'OP_CASTEO'
+	CASTEO:			'OP_CASTEO',
+	TOLOWER:		'OP_TOLOWER',
+	TOUPPER:		'OP_TOUPPER',
+	ROUND:			'OP_ROUND'
 };
 
 const TIPO_INSTRUCCION = {
@@ -157,6 +160,24 @@ const instruccionesAPI = {
 			tipo: TIPO_INSTRUCCION.LLAMAR,
 			identificador: id,
 			parametros: params
+		}
+	},
+	nuevoToLower: function(cadena){
+		return{
+			tipo: TIPO_OPERACION.TOLOWER,
+			cadena: cadena
+		}
+	},
+	nuevoToUpper: function(cadena){
+		return{
+			tipo: TIPO_OPERACION.TOUPPER,
+			cadena: cadena
+		}
+	},
+	nuevoRound: function(expresion){
+		return{
+			tipo: TIPO_OPERACION.ROUND,
+			expresion: expresion
 		}
 	}
 }
