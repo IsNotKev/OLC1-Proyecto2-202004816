@@ -149,6 +149,12 @@ inicio
     |BREAK PUNTOYCOMA                                               { $$ = instruccionesAPI.nuevoBreak(); }
     |metodo
     |llamado
+    |while
+;
+
+while
+    :WHILE PAR_ABRE expresion PAR_CIERRA statement                  { $$ = instruccionesAPI.nuevoMientras($3,$5); }
+    |DO statement WHILE PAR_ABRE expresion PAR_CIERRA PUNTOYCOMA    { $$ = instruccionesAPI.nuevoDoMientras($5,$2); }
 ;
 
 llamado
@@ -246,6 +252,7 @@ expresion
     |TOLOWER PAR_ABRE expresion PAR_CIERRA  { $$ = instruccionesAPI.nuevoToLower($3); }
     |TOUPPER PAR_ABRE expresion PAR_CIERRA  { $$ = instruccionesAPI.nuevoToUpper($3); }
     |ROUND PAR_ABRE expresion PAR_CIERRA    { $$ = instruccionesAPI.nuevoRound($3); }
+    |TYPEOF PAR_ABRE expresion PAR_CIERRA   { $$ = instruccionesAPI.nuevoTypeOf($3); }
     |PAR_ABRE expresion PAR_CIERRA      { $$= $2 }
 	|ENTERO	                            { $$ = instruccionesAPI.nuevoValor(Number($1), TIPO_VALOR.ENTERO); }					
 	|CADENA                             { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.CADENA); }

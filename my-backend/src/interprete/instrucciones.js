@@ -34,13 +34,15 @@ const TIPO_OPERACION = {
 	CASTEO:			'OP_CASTEO',
 	TOLOWER:		'OP_TOLOWER',
 	TOUPPER:		'OP_TOUPPER',
-	ROUND:			'OP_ROUND'
+	ROUND:			'OP_ROUND',
+	TYPEOF: 		'OP_TYPEOF'
 };
 
 const TIPO_INSTRUCCION = {
 	IMPRIMIRLN:		'INSTR_IMPRIMIRLN',
 	IMPRIMIR:		'INSTR_IMPRIMIR',
-	//MIENTRAS:		'INSTR_MIENTRAS',
+	MIENTRAS:		'INSTR_MIENTRAS',
+	DOMIENTRAS:		'INSTR_DOMIENTRAS',
 	DECLARACION:	'INSTR_DECLARACION',
 	ASIGNACION:		'INSTR_ASIGANCION',
 	IF:				'INSTR_IF',
@@ -179,6 +181,26 @@ const instruccionesAPI = {
 			tipo: TIPO_OPERACION.ROUND,
 			expresion: expresion
 		}
+	},
+	nuevoTypeOf: function(expresion){
+		return{
+			tipo: TIPO_OPERACION.TYPEOF,
+			expresion: expresion
+		}
+	},
+	nuevoMientras: function(expresionLogica, instrucciones) {
+		return {
+			tipo: TIPO_INSTRUCCION.MIENTRAS,
+			expresionLogica: expresionLogica,
+			instrucciones: instrucciones
+		};
+	},
+	nuevoDoMientras: function(expresionLogica, instrucciones) {
+		return {
+			tipo: TIPO_INSTRUCCION.DOMIENTRAS,
+			expresionLogica: expresionLogica,
+			instrucciones: instrucciones
+		};
 	}
 }
 

@@ -83,6 +83,14 @@ function procesarBloque(instrucciones, tablaDeSimbolos, ant) {
             var a = procesarFuncion(instruccion, tablaDeSimbolos,anterior);
             salida += a.salida.slice(13);
             anterior = a.anterior;
+        }else if (instruccion.tipo === TIPO_INSTRUCCION.MIENTRAS) {
+            var a = procesarWhile(instruccion, tablaDeSimbolos, anterior);
+            salida += a.salida;
+            anterior = a.anterior;
+        }else if (instruccion.tipo === TIPO_INSTRUCCION.DOMIENTRAS) {
+            var a = procesarDoWhile(instruccion, tablaDeSimbolos, anterior);
+            salida += a.salida;
+            anterior = a.anterior;
         }/*else if (instruccion.tipo === TIPO_INSTRUCCION.BREAK) {
             return {salida:salida,anterior:anterior};
         }*/
@@ -114,7 +122,7 @@ function procesarImprimir(instruccion, tablaDeSimbolos,anterior) {
     }
 
     if(anterior){
-        return '\n>>>' + cadena;
+        return '\n> ' + cadena;
     }else{
         return cadena
     }  
@@ -133,7 +141,7 @@ function procesarImprimirLn(instruccion, tablaDeSimbolos) {
     }else{
         cadena = cadena.valor;
     }
-    return '\n>>>' + cadena;
+    return '\n> ' + cadena;
 }
 
 // EXPRESION
@@ -235,6 +243,9 @@ function procesarExpresion(expresion,tablaDeSimbolos){
         }else{
             throw 'ERROR -> NO SE PUEDE REDONDEAR'
         }
+    }else if(expresion.tipo === TIPO_OPERACION.TYPEOF){
+        var valor = procesarExpresion(expresion.expresion,tablaDeSimbolos);        
+        return tipode(valor);
     }else if(expresion.tipo === TIPO_OPERACION.TERNARIO){        
         return ternario(expresion,tablaDeSimbolos);
     }else if (expresion.tipo === TIPO_VALOR.CADENA) {
@@ -248,7 +259,7 @@ function procesarExpresion(expresion,tablaDeSimbolos){
     }else if (expresion.tipo === TIPO_VALOR.CARACTER) {
         return {valor: expresion.valor, tipo: TIPO_VALOR.CARACTER};
     }else if (expresion.tipo === TIPO_VALOR.IDENTIFICADOR) {
-        const sym = tablaDeSimbolos.obtener(expresion.valor);
+        const sym = tablaDeSimbolos.obtener((expresion.valor).toLowerCase());
         return {valor: sym.valor, tipo: sym.tipo};
     }
 }
@@ -587,5 +598,56 @@ function procesarFuncion(instruccion, tablaDeSimbolos, anterior){
         }
     }else{
         throw 'ERROR -> Funcion No Existe';
+    }
+}
+
+function tipode(valor){
+    var tipo;
+    if(valor.tipo === TIPO_VALOR.CADENA){
+        tipo = 'string';
+    }else if(valor.tipo === TIPO_VALOR.CARACTER){
+        tipo = 'char';
+    }else if(valor.tipo === TIPO_VALOR.ENTERO){
+        tipo = 'int';
+    }else if(valor.tipo === TIPO_VALOR.DOUBLE){
+        tipo = 'double';
+    }else if(valor.tipo === TIPO_VALOR.BOOLEAN){
+        tipo = 'boolean';
+    }else{
+        throw 'ERROR -> No tiene tipo'
+    }
+
+    return {valor:tipo,tipo:TIPO_VALOR.CADENA}
+}
+
+function procesarWhile(instruccion, tablaDeSimbolos, anterior){
+    var ant = anterior;
+    var salida = '';
+    if(procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos).tipo === TIPO_VALOR.BOOLEAN){
+        while (obtener_bool(procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos))) {
+            const tsMientras = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
+            var res = procesarBloque(instruccion.instrucciones, tsMientras, ant);         
+            ant = res.anterior;
+            salida += ((res.salida).slice(13));
+        }
+        return {salida:salida,anterior:ant};
+    }else{
+        throw 'ERROR -> WHILE NECESITA UN BOOLEANO'
+    }      
+}
+
+function procesarDoWhile(instruccion, tablaDeSimbolos, anterior){
+    var ant = anterior;
+    var salida = '';
+    if(procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos).tipo === TIPO_VALOR.BOOLEAN){
+        do{
+            const tsMientras = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
+            var res = procesarBloque(instruccion.instrucciones, tsMientras, ant);       
+            ant = res.anterior;
+            salida += ((res.salida).slice(13));
+        }while(obtener_bool(procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos)))
+        return {salida:salida,anterior:ant};
+    }else{
+        throw 'ERROR -> DO WHILE NECESITA UN BOOLEANO'
     }
 }
