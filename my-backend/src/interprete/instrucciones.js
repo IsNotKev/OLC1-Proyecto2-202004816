@@ -48,8 +48,8 @@ const TIPO_INSTRUCCION = {
 	IF:				'INSTR_IF',
 	IF_ELSE:		'INSTR_ELSE',
 	BREAK:			'INSTR_BREAK',
-	/*PARA: 			'INST_PARA',
-	SWITCH:			'SWITCH',
+	FOR: 			'INST_FOR',
+	/*SWITCH:			'SWITCH',
 	SWITCH_OP:		'SWITCH_OP',
 	SWITCH_DEF:		'SWITCH_DEF',
 	ASIGNACION_SIMPLIFICADA: 'ASIGNACION_SIMPLIFICADA'*/
@@ -201,6 +201,15 @@ const instruccionesAPI = {
 			expresionLogica: expresionLogica,
 			instrucciones: instrucciones
 		};
+	},
+	nuevoFor: function (variable, expresionLogica, aumento, instrucciones) {
+		return {
+			tipo: TIPO_INSTRUCCION.FOR,
+			expresionLogica: expresionLogica,
+			instrucciones: instrucciones,
+			aumento: aumento,
+			variable: variable
+		}
 	}
 }
 

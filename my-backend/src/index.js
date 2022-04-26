@@ -91,6 +91,10 @@ function procesarBloque(instrucciones, tablaDeSimbolos, ant) {
             var a = procesarDoWhile(instruccion, tablaDeSimbolos, anterior);
             salida += a.salida;
             anterior = a.anterior;
+        }else if (instruccion.tipo === TIPO_INSTRUCCION.FOR) {
+            var a = procesarFor(instruccion, tablaDeSimbolos, anterior);
+            salida += a.salida;
+            anterior = a.anterior;
         }/*else if (instruccion.tipo === TIPO_INSTRUCCION.BREAK) {
             return {salida:salida,anterior:anterior};
         }*/
@@ -649,5 +653,29 @@ function procesarDoWhile(instruccion, tablaDeSimbolos, anterior){
         return {salida:salida,anterior:ant};
     }else{
         throw 'ERROR -> DO WHILE NECESITA UN BOOLEANO'
+    }
+}
+
+function procesarFor(instruccion, tablaDeSimbolos, anterior){
+    var ant = anterior;
+    var salida = '';
+    const tsGbFor = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
+    if(instruccion.variable.tipo === TIPO_INSTRUCCION.DECLARACION && instruccion.variable.tipo_dato === TIPO_VALOR.ENTERO){
+        procesarDeclaracion(instruccion.variable,tsGbFor);
+    }else{
+        procesarAsignacion(instruccion.variable,tsGbFor);
+    }
+
+    if(procesarExpresion(instruccion.expresionLogica, tsGbFor).tipo === TIPO_VALOR.BOOLEAN){
+        while (obtener_bool(procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos))) {
+            const tsPara = new TS(tsGbFor.simbolos,tsGbFor.funciones);
+            var res = procesarBloque(instruccion.instrucciones, tsPara, ant);         
+            ant = res.anterior;
+            salida += ((res.salida).slice(13));
+            procesarAsignacion(instruccion.aumento,tsGbFor);
+        }
+        return {salida:salida,anterior:ant};
+    }else{
+        throw 'ERROR -> FOR NECESITA UN BOOLEANO'
     }
 }

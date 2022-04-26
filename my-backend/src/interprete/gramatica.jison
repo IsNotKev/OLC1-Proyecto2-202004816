@@ -150,6 +150,11 @@ inicio
     |metodo
     |llamado
     |while
+    |for
+;
+
+for
+    :FOR PAR_ABRE declaracion expresion PUNTOYCOMA asignaciones PAR_CIERRA statement { $$ = instruccionesAPI.nuevoFor($3,$4,$6,$8); }
 ;
 
 while
@@ -213,9 +218,13 @@ declaracion
     |STRING listaid PUNTOYCOMA                    { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.CADENA,instruccionesAPI.nuevoValor("", TIPO_VALOR.CADENA)); }
     |BOOLEAN listaid IGUAL expresion PUNTOYCOMA   { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.BOOLEAN,$4); }
     |BOOLEAN listaid PUNTOYCOMA                   { $$ = instruccionesAPI.nuevoDeclaracion($2, TIPO_DATO.BOOLEAN,instruccionesAPI.nuevoValor('TRUE', TIPO_VALOR.BOOLEAN)); }
-    |listaid IGUAL expresion PUNTOYCOMA           { $$ = instruccionesAPI.nuevoAsignacion($1,$3); }
-    |IDENTIFICADOR INCREMENTO PUNTOYCOMA          { $$ = instruccionesAPI.nuevoAsignacion([$1],instruccionesAPI.nuevoOperacionUnaria(instruccionesAPI.nuevoValor($1, TIPO_VALOR.IDENTIFICADOR),TIPO_OPERACION.INCREMENTO)); }
-    |IDENTIFICADOR DECREMENTO PUNTOYCOMA          { $$ = instruccionesAPI.nuevoAsignacion([$1],instruccionesAPI.nuevoOperacionUnaria(instruccionesAPI.nuevoValor($1, TIPO_VALOR.IDENTIFICADOR),TIPO_OPERACION.DECREMENTO)); }
+    |asignaciones PUNTOYCOMA                      { $$ = $1; }
+;
+
+asignaciones
+    :listaid IGUAL expresion           { $$ = instruccionesAPI.nuevoAsignacion($1,$3); }
+    |IDENTIFICADOR INCREMENTO          { $$ = instruccionesAPI.nuevoAsignacion([$1],instruccionesAPI.nuevoOperacionUnaria(instruccionesAPI.nuevoValor($1, TIPO_VALOR.IDENTIFICADOR),TIPO_OPERACION.INCREMENTO)); }
+    |IDENTIFICADOR DECREMENTO          { $$ = instruccionesAPI.nuevoAsignacion([$1],instruccionesAPI.nuevoOperacionUnaria(instruccionesAPI.nuevoValor($1, TIPO_VALOR.IDENTIFICADOR),TIPO_OPERACION.DECREMENTO)); }
 ;
 
 listaid
