@@ -57,49 +57,58 @@ app.listen(5000, () => {
 
 //-------------------------------------------------------------INSTRUCCIONES----------------------------------------------------
 //PROCESANDO FUNCIONES
-function procesarBloque(instrucciones, tablaDeSimbolos, ant) {
+function procesarBloque(instrucciones, tablaDeSimbolos, ant,b,c) {
     var salida = 'Ejecutando...';
     var anterior = ant;
-    instrucciones.forEach(instruccion => {
-        if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIRLN) {
-            salida += procesarImprimirLn(instruccion, tablaDeSimbolos);
-            anterior = true;
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIR) {
-            salida += procesarImprimir(instruccion, tablaDeSimbolos,anterior);
-            anterior = false;
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.DECLARACION) {
-            procesarDeclaracion(instruccion, tablaDeSimbolos);
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.ASIGNACION) {
-            procesarAsignacion(instruccion, tablaDeSimbolos);
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.IF) {
-            var a = procesarIf(instruccion, tablaDeSimbolos,anterior);
-            salida += a.salida;
-            anterior = a.anterior;
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.IF_ELSE) {
-            var a = procesarIfElse(instruccion, tablaDeSimbolos,anterior);
-            salida += a.salida;
-            anterior = a.anterior;
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.LLAMAR) {
-            var a = procesarFuncion(instruccion, tablaDeSimbolos,anterior);
-            salida += a.salida.slice(13);
-            anterior = a.anterior;
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.MIENTRAS) {
-            var a = procesarWhile(instruccion, tablaDeSimbolos, anterior);
-            salida += a.salida;
-            anterior = a.anterior;
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.DOMIENTRAS) {
-            var a = procesarDoWhile(instruccion, tablaDeSimbolos, anterior);
-            salida += a.salida;
-            anterior = a.anterior;
-        }else if (instruccion.tipo === TIPO_INSTRUCCION.FOR) {
-            var a = procesarFor(instruccion, tablaDeSimbolos, anterior);
-            salida += a.salida;
-            anterior = a.anterior;
-        }/*else if (instruccion.tipo === TIPO_INSTRUCCION.BREAK) {
-            return {salida:salida,anterior:anterior};
-        }*/
+    var breakvar = true;
+    var continuevar = true;
+    instrucciones.map(instruccion => {
+        if(breakvar && continuevar){
+            if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIRLN) {
+                salida += procesarImprimirLn(instruccion, tablaDeSimbolos);
+                anterior = true;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIR) {
+                salida += procesarImprimir(instruccion, tablaDeSimbolos,anterior);
+                anterior = false;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.DECLARACION) {
+                procesarDeclaracion(instruccion, tablaDeSimbolos);
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.ASIGNACION) {
+                procesarAsignacion(instruccion, tablaDeSimbolos);
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.IF) {
+                var a = procesarIf(instruccion, tablaDeSimbolos,anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.IF_ELSE) {
+                var a = procesarIfElse(instruccion, tablaDeSimbolos,anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.LLAMAR) {
+                var a = procesarFuncion(instruccion, tablaDeSimbolos,anterior);
+                salida += a.salida.slice(13);
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.MIENTRAS) {
+                var a = procesarWhile(instruccion, tablaDeSimbolos, anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.DOMIENTRAS) {
+                var a = procesarDoWhile(instruccion, tablaDeSimbolos, anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.FOR) {
+                var a = procesarFor(instruccion, tablaDeSimbolos, anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.BREAK) {
+                var a = false;
+                breakvar = a;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.CONTINUE) {
+                var a = false;
+                continuevar = a;
+            }
+        }   
     });
-    return {salida:salida,anterior:anterior};
+    //console.log(breakvar);
+    return {salida:salida,anterior:anterior,breakvar:breakvar,continuevar:continuevar};
 }
 
 //GUARDAR FUNCIONES
@@ -226,6 +235,9 @@ function procesarExpresion(expresion,tablaDeSimbolos){
     }else if(expresion.tipo === TIPO_OPERACION.CASTEO){
         var valor = procesarExpresion(expresion.valor,tablaDeSimbolos);        
         return casteo(expresion.tipo_casteo,valor);
+    }else if(expresion.tipo === TIPO_OPERACION.LENGTH){
+        var valor = procesarExpresion(expresion.expresion,tablaDeSimbolos);        
+        return procesarLength(valor);
     }else if(expresion.tipo === TIPO_OPERACION.TOLOWER){
         var valor = procesarExpresion(expresion.cadena,tablaDeSimbolos);        
         if(valor.tipo === TIPO_VALOR.CADENA){
@@ -581,7 +593,7 @@ function ternario(instruccion , tablaDeSimbolos){
 
 //PROCESANDO FUNCION
 function procesarFuncion(instruccion, tablaDeSimbolos, anterior){
-    const sym = tablaDeSimbolos.obtenerFuncion(instruccion.identificador);
+    const sym = tablaDeSimbolos.obtenerFuncion((instruccion.identificador).toLowerCase());
     if(sym){    
         if(instruccion.parametros.length === sym.parametros.length){
             const tsFunction = new TS([],tablaDeSimbolos.funciones);
@@ -633,6 +645,9 @@ function procesarWhile(instruccion, tablaDeSimbolos, anterior){
             var res = procesarBloque(instruccion.instrucciones, tsMientras, ant);         
             ant = res.anterior;
             salida += ((res.salida).slice(13));
+            if(res.break){
+                break;
+            }
         }
         return {salida:salida,anterior:ant};
     }else{
@@ -649,6 +664,9 @@ function procesarDoWhile(instruccion, tablaDeSimbolos, anterior){
             var res = procesarBloque(instruccion.instrucciones, tsMientras, ant);       
             ant = res.anterior;
             salida += ((res.salida).slice(13));
+            if(!(res.break)){
+                break;
+            }
         }while(obtener_bool(procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos)))
         return {salida:salida,anterior:ant};
     }else{
@@ -669,13 +687,27 @@ function procesarFor(instruccion, tablaDeSimbolos, anterior){
     if(procesarExpresion(instruccion.expresionLogica, tsGbFor).tipo === TIPO_VALOR.BOOLEAN){
         while (obtener_bool(procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos))) {
             const tsPara = new TS(tsGbFor.simbolos,tsGbFor.funciones);
-            var res = procesarBloque(instruccion.instrucciones, tsPara, ant);         
+            var res = procesarBloque(instruccion.instrucciones, tsPara, ant);
+
             ant = res.anterior;
-            salida += ((res.salida).slice(13));
-            procesarAsignacion(instruccion.aumento,tsGbFor);
+            salida += ((res.salida).slice(13)); 
+            //console.log(res);     
+            if(!(res.breakvar)){
+                break;
+            }else{
+                procesarAsignacion(instruccion.aumento,tsGbFor);
+            }                      
         }
         return {salida:salida,anterior:ant};
     }else{
         throw 'ERROR -> FOR NECESITA UN BOOLEANO'
+    }
+}
+
+function procesarLength(val,tablaDeSimbolos){
+    if(val.tipo === TIPO_VALOR.CADENA){
+        return {valor: val.valor.length, tipo: TIPO_VALOR.ENTERO}
+    }else{
+        throw 'No Se Puede Utilizar La Función Length'
     }
 }

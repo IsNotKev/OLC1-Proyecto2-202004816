@@ -35,7 +35,8 @@ const TIPO_OPERACION = {
 	TOLOWER:		'OP_TOLOWER',
 	TOUPPER:		'OP_TOUPPER',
 	ROUND:			'OP_ROUND',
-	TYPEOF: 		'OP_TYPEOF'
+	TYPEOF: 		'OP_TYPEOF',
+	LENGTH:			'OP_LENGTH'
 };
 
 const TIPO_INSTRUCCION = {
@@ -48,6 +49,7 @@ const TIPO_INSTRUCCION = {
 	IF:				'INSTR_IF',
 	IF_ELSE:		'INSTR_ELSE',
 	BREAK:			'INSTR_BREAK',
+	CONTINUE:		'INSTR_CONTINUE',
 	FOR: 			'INST_FOR',
 	/*SWITCH:			'SWITCH',
 	SWITCH_OP:		'SWITCH_OP',
@@ -141,6 +143,11 @@ const instruccionesAPI = {
 			tipo: TIPO_INSTRUCCION.BREAK
 		}
 	},
+	nuevoContinue: function(){
+		return{
+			tipo: TIPO_INSTRUCCION.CONTINUE
+		}
+	},
 	nuevoParametro: function(tipo,identificador){
 		return{
 			tipo: TIPO_INSTRUCCION.PARAMETRO,
@@ -209,6 +216,12 @@ const instruccionesAPI = {
 			instrucciones: instrucciones,
 			aumento: aumento,
 			variable: variable
+		}
+	},
+	nuevoLength: function(expresion){
+		return{
+			tipo: TIPO_OPERACION.LENGTH,
+			expresion: expresion
 		}
 	}
 }

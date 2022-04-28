@@ -147,6 +147,7 @@ inicio
     |print
     |if
     |BREAK PUNTOYCOMA                                               { $$ = instruccionesAPI.nuevoBreak(); }
+    |CONTINUE PUNTOYCOMA                                            { $$ = instruccionesAPI.nuevoContinue(); }
     |metodo
     |llamado
     |while
@@ -165,6 +166,8 @@ while
 llamado
     :IDENTIFICADOR PAR_ABRE pp PAR_CIERRA PUNTOYCOMA                { $$ = instruccionesAPI.nuevoLlamar($1,$3); }
     |IDENTIFICADOR PAR_ABRE PAR_CIERRA PUNTOYCOMA                   { $$ = instruccionesAPI.nuevoLlamar($1,[]); }
+    |RUN IDENTIFICADOR PAR_ABRE pp PAR_CIERRA PUNTOYCOMA            { $$ = instruccionesAPI.nuevoLlamar($2,$4); }
+    |RUN IDENTIFICADOR PAR_ABRE PAR_CIERRA PUNTOYCOMA               { $$ = instruccionesAPI.nuevoLlamar($2,[]); }
 ;
 
 pp
@@ -263,6 +266,7 @@ expresion
     |ROUND PAR_ABRE expresion PAR_CIERRA    { $$ = instruccionesAPI.nuevoRound($3); }
     |TYPEOF PAR_ABRE expresion PAR_CIERRA   { $$ = instruccionesAPI.nuevoTypeOf($3); }
     |PAR_ABRE expresion PAR_CIERRA      { $$= $2 }
+    |LENGTH PAR_ABRE expresion PAR_CIERRA   { $$ = instruccionesAPI.nuevoLength($3); }
 	|ENTERO	                            { $$ = instruccionesAPI.nuevoValor(Number($1), TIPO_VALOR.ENTERO); }					
 	|CADENA                             { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.CADENA); }
     |CARACTER                           { $$ = instruccionesAPI.nuevoValor($1, TIPO_VALOR.CARACTER); }
