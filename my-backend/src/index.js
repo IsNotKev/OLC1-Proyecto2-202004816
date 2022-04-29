@@ -45,7 +45,8 @@ app.post('/ejecutar', function (req, res){
 
     //respuesta
     res.json({
-        message: respuesta
+        message: respuesta,
+        ast: tsGlobal
     });
     
 });
@@ -172,7 +173,7 @@ function procesarBloque(instrucciones, tablaDeSimbolos, ant,b,c) {
 function guardarFunciones(instrucciones,tablaDeSimbolos){
     instrucciones.forEach(instruccion => {
         if(instruccion.tipo === TIPO_INSTRUCCION.METODO){
-            tablaDeSimbolos.agregarFuncion((instruccion.identificador).toLowerCase(), instruccion.parametros, instruccion.tipo, instruccion.instrucciones);
+            tablaDeSimbolos.agregarFuncion((instruccion.identificador).toLowerCase(), instruccion.parametros, instruccion.tipo, instruccion.instrucciones, instruccion.tipo_dato);
         }
     });
 }

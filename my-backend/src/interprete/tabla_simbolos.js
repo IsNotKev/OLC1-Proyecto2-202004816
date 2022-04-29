@@ -1,12 +1,13 @@
 const { TIPO_VALOR } = require("./instrucciones");
 
 const TIPO_DATO = {
-    ENTERO:         0,
-	DOUBLE:			1,
-	IDENTIFICADOR:  2,
-	CADENA:         3,
-	CARACTER:		4,
-	BOOLEAN:		5
+    ENTERO:         'V_ENTERO',
+	DOUBLE:			'V_DECIMAL',
+	IDENTIFICADOR:  'IDENTIFICADOR',
+	CADENA:         'V_CADENA',
+	CARACTER:		'V_CARACTER',
+	BOOLEAN:		'V_BOOLEAN',
+	VOID:			'VOID'
 }
 
 function crearSimbolo(id, tipo, valor) {
@@ -17,12 +18,13 @@ function crearSimbolo(id, tipo, valor) {
     }
 }
 
-function crearFuncion(id,parametros,tipo,instrucciones){
+function crearFuncion(id,parametros,tipo,instrucciones,dato){
     return {
         id: id,
         parametros: parametros,
         tipo: tipo,
-        instrucciones: instrucciones
+        instrucciones: instrucciones,
+        tipo_dato: dato
     }
 }
 
@@ -92,10 +94,10 @@ class TS{
         else return false;
     }
 
-    agregarFuncion(id,parametros,tipo,instrucciones){
+    agregarFuncion(id,parametros,tipo,instrucciones,dato){
         var verificar = this.existe(id);
         if(!verificar){
-            const nuevaFuncion = crearFuncion(id,parametros,tipo,instrucciones);
+            const nuevaFuncion = crearFuncion(id,parametros,tipo,instrucciones,dato);
             this._funciones.push(nuevaFuncion);
         }else{
             throw 'ERROR DE TIPOS -> funcion: ' + id + ' Ya Existe.'
