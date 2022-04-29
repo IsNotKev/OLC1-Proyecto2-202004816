@@ -60,9 +60,66 @@ app.listen(5000, () => {
 function procesarBloque(instrucciones, tablaDeSimbolos, ant,b,c) {
     var salida = 'Ejecutando...';
     var anterior = ant;
-    var breakvar = true;
-    var continuevar = true;
-    instrucciones.map(instruccion => {
+    var breakvar = b;
+    var continuevar = c;
+    for (const instruccion of instrucciones) {
+        if(!breakvar && !continuevar){
+            if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIRLN) {
+                salida += procesarImprimirLn(instruccion, tablaDeSimbolos);
+                anterior = true;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIR) {
+                salida += procesarImprimir(instruccion, tablaDeSimbolos,anterior);
+                anterior = false;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.DECLARACION) {
+                procesarDeclaracion(instruccion, tablaDeSimbolos);
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.ASIGNACION) {
+                procesarAsignacion(instruccion, tablaDeSimbolos);
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.IF) {
+                var a = procesarIf(instruccion, tablaDeSimbolos,anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+                if(a.breakvar){
+                    breakvar = true;
+                    break;
+                }else if(a.continuevar){
+                    continuevar = true;
+                    break;
+                }
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.IF_ELSE) {
+                var a = procesarIfElse(instruccion, tablaDeSimbolos,anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+                if(a.breakvar){
+                    breakvar = true;
+                    break;
+                }else if(a.continuevar){
+                    continuevar = true;
+                    break;
+                }
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.LLAMAR) {
+                var a = procesarFuncion(instruccion, tablaDeSimbolos,anterior);
+                salida += a.salida.slice(13);
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.MIENTRAS) {
+                var a = procesarWhile(instruccion, tablaDeSimbolos, anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.DOMIENTRAS) {
+                var a = procesarDoWhile(instruccion, tablaDeSimbolos, anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.FOR) {
+                var a = procesarFor(instruccion, tablaDeSimbolos, anterior);
+                salida += a.salida;
+                anterior = a.anterior;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.BREAK) {
+                breakvar = true;
+            }else if (instruccion.tipo === TIPO_INSTRUCCION.CONTINUE) {
+                continuevar = true;
+            }
+        }
+    }
+    /*instrucciones.map(instruccion => {
         if(breakvar && continuevar){
             if (instruccion.tipo === TIPO_INSTRUCCION.IMPRIMIRLN) {
                 salida += procesarImprimirLn(instruccion, tablaDeSimbolos);
@@ -106,9 +163,9 @@ function procesarBloque(instrucciones, tablaDeSimbolos, ant,b,c) {
                 continuevar = a;
             }
         }   
-    });
-    //console.log(breakvar);
-    return {salida:salida,anterior:anterior,breakvar:breakvar,continuevar:continuevar};
+    });*/
+
+    return {salida:salida,anterior:anterior,breakvar:breakvar,continuevar:continuevar};  
 }
 
 //GUARDAR FUNCIONES
@@ -544,7 +601,7 @@ function procesarIf(instruccion, tablaDeSimbolos, anterior) {
         if (obtener_bool(valorCondicion)) {
             const tsIf = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
             var ss = procesarBloque(instruccion.instrucciones, tsIf,anterior);
-            return {salida:ss.salida.slice(13), anterior:ss.anterior};
+            return {salida:ss.salida.slice(13), anterior:ss.anterior, breakvar:ss.breakvar, continuevar:ss.continuevar};
         }else{
             return {salida:"", anterior:anterior}
         }
@@ -560,7 +617,7 @@ function procesarIfElse(instruccion, tablaDeSimbolos, anterior) {
         if (obtener_bool(valorCondicion)) {
             const tsIf = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
             var ss = procesarBloque(instruccion.instruccionesIfVerdadero, tsIf,anterior);
-            return {salida:ss.salida.slice(13), anterior:ss.anterior};
+            return {salida:ss.salida.slice(13), anterior:ss.anterior, breakvar:ss.breakvar, continuevar:ss.continuevar};
         }else{
             const tsIf = new TS(tablaDeSimbolos.simbolos,tablaDeSimbolos.funciones);
             var ss;
@@ -570,7 +627,7 @@ function procesarIfElse(instruccion, tablaDeSimbolos, anterior) {
                 ss = procesarBloque(instruccion.instruccionesIfFalso, tsIf,anterior);
             }
 
-            return {salida:ss.salida.slice(13), anterior:ss.anterior};
+            return {salida:ss.salida.slice(13), anterior:ss.anterior, breakvar:ss.breakvar, continuevar:ss.continuevar};
         }
     }else{
         throw 'ERROR -> Condición if necesita un booleano';
@@ -664,7 +721,7 @@ function procesarDoWhile(instruccion, tablaDeSimbolos, anterior){
             var res = procesarBloque(instruccion.instrucciones, tsMientras, ant);       
             ant = res.anterior;
             salida += ((res.salida).slice(13));
-            if(!(res.break)){
+            if(res.break){
                 break;
             }
         }while(obtener_bool(procesarExpresion(instruccion.expresionLogica, tablaDeSimbolos)))
@@ -692,7 +749,7 @@ function procesarFor(instruccion, tablaDeSimbolos, anterior){
             ant = res.anterior;
             salida += ((res.salida).slice(13)); 
             //console.log(res);     
-            if(!(res.breakvar)){
+            if((res.breakvar)){
                 break;
             }else{
                 procesarAsignacion(instruccion.aumento,tsGbFor);
