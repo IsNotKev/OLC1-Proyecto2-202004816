@@ -46,7 +46,8 @@ app.post('/ejecutar', function (req, res){
     //respuesta
     res.json({
         message: respuesta,
-        ast: tsGlobal
+        ast: ast,
+        simbolos: tsGlobal
     });
     
 });

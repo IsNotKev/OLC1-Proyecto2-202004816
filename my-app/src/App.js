@@ -1,10 +1,13 @@
 import Editor from '@monaco-editor/react';
 import { useRef } from 'react';
 import './App.css';
+import { Graphviz } from 'graphviz-react';
 
 function App() {
   const editorRef = useRef(null);
   let ast = null;
+  let simbolos = null;
+  var vardot = 'graph{a--b}';
 
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
@@ -30,7 +33,7 @@ function App() {
         console.log(response);
         document.getElementById('consola').textContent = response.message;
         ast = response.ast;
-        //editorRef.current.getModel().setValue(response.message);
+        simbolos = response.simbolos;
       })
   }
 
@@ -72,33 +75,38 @@ function App() {
     }
   }
 
-  function verSimbolos(){
-    if(ast!=null){
-      let simbs = ast._simbolos;
-      let func = ast._funciones;
+  function verSimbolos() {
+    if (simbolos != null) {
+      let simbs = simbolos._simbolos;
+      let func = simbolos._funciones;
       let tabla = document.getElementById('tsimbolos');
       var a = '';
-      simbs.forEach(simbolo =>{
-        a += '<tr> <td>'+ simbolo.id +'<td> Variable <td>'+ simbolo.tipo +'<td> Global';
+      simbs.forEach(simbolo => {
+        a += '<tr> <td>' + simbolo.id + '<td> Variable <td>' + simbolo.tipo + '<td> Global';
       });
-      func.forEach(simbolo =>{
-        a += '<tr> <td>'+ simbolo.id +'<td> Función <td>'+ simbolo.tipo_dato +'<td> Global';
+      func.forEach(simbolo => {
+        a += '<tr> <td>' + simbolo.id + '<td> Función <td>' + simbolo.tipo_dato + '<td> Global';
         let params = simbolo.parametros;
         let instr = simbolo.instrucciones;
-        params.forEach(par =>{
-          a += '<tr> <td>'+ par.identificador +'<td> Variable <td>'+ par.tipo_dato +'<td>' + simbolo.id;
+        params.forEach(par => {
+          a += '<tr> <td>' + par.identificador + '<td> Variable <td>' + par.tipo_dato + '<td>' + simbolo.id;
         });
-        instr.forEach(instruccion =>{
-          if(instruccion.tipo === 'INSTR_DECLARACION'){
+        instr.forEach(instruccion => {
+          if (instruccion.tipo === 'INSTR_DECLARACION') {
             a += '<tr>';
             let ids = instruccion.identificadores;
-            ids.forEach(idd =>{
-              a+= '<td>'+ idd +'<td> Variable <td>'+ instruccion.tipo_dato +'<td>' + simbolo.id;
+            ids.forEach(idd => {
+              a += '<td>' + idd + '<td> Variable <td>' + instruccion.tipo_dato + '<td>' + simbolo.id;
             });
           }
         });
       });
       tabla.innerHTML = a;
+    }
+  }
+
+  function verAST() {
+    if (ast != null) {
     }
   }
 
@@ -147,7 +155,7 @@ function App() {
       <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalErrores" style={{ marginBottom: '2%', marginLeft: '2%' }}>
         Ver Tabla De Errores
       </button>
-      <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalAST" style={{ marginBottom: '2%', marginLeft: '2%' }}>
+      <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalAST" style={{ marginBottom: '2%', marginLeft: '2%' }} onClick={verAST}>
         Ver AST
       </button>
 
@@ -159,7 +167,7 @@ function App() {
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <table class="table table-striped" style={{width:'80%', margin: 'auto'}}>
+              <table class="table table-striped" style={{ width: '80%', margin: 'auto' }}>
                 <thead class="table table-dark">
                   <tr>
                     <th scope="col">IDENTIFICADOR</th>
@@ -203,8 +211,8 @@ function App() {
               <h5 class="modal-title" id="exampleModalLabel">AST</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-              ...
+            <div class="modal-body" id='mAST'>
+              <Graphviz dot={vardot}/>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

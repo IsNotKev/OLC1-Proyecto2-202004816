@@ -1,0 +1,97 @@
+INICIO ->   INSTRUCCIONES EOF
+
+INSTRUCCIONES ->    INSTRUCCIONES INSTRUCCION
+                    | INSTRUCCION
+
+INSTRUCCION ->    DECLARACION 
+                | IMPRIMIR
+                | IF
+                | METODO
+                | LLAMADA
+                | WHILE
+                | FOR
+                | BREAK PUNTOYCOMA
+                | CONTINUE PUNTOYCOMA
+                | ASIGNACION
+
+DECLARACION ->    TIPO LISTAID PUNTOYCOMA
+                | TIPO LISTAID IGUAL expresion PUNTOYCOMA
+
+LISTAID ->    LISTAID IDENTIFICADOR
+            | IDENTIFICADOR
+
+ASIGNACION -> LISTAID IGUAL expresion PUNTOYCOMA
+
+TIPO ->   INT 
+        | DOUBLE
+        | STRING
+        | CHAR
+        | BOOLEAN
+
+expresion -> MENOS expresion
+    |expresion INCREMENTO	            
+    |expresion DECREMENTO	                                        
+    |expresion INTERROGACION expresion DOSPUNTOS expresion  
+    |expresion MAS expresion            
+    |expresion MENOS expresion          
+    |expresion POR expresion               
+    |expresion DIVIDIR expresion        
+    |expresion POTENCIA expresion      
+    |expresion MODULO expresion         
+    |expresion D_IGUAL expresion     
+    |expresion DIFERENTE expresion      
+    |expresion MAYOR_IGUAL expresion  
+    |expresion MENOR_IGUAL expresion   
+    |expresion MAYOR expresion              
+    |expresion MENOR expresion          
+    |NOT expresion          
+    |expresion AND expresion            
+    |expresion OR expresion             
+    |PAR_ABRE TIPO PAR_CIERRA expresion
+    |TOSTRING PAR_ABRE expresion PAR_CIERRA 
+    |TOLOWER PAR_ABRE expresion PAR_CIERRA  
+    |TOUPPER PAR_ABRE expresion PAR_CIERRA  
+    |ROUND PAR_ABRE expresion PAR_CIERRA    
+    |TYPEOF PAR_ABRE expresion PAR_CIERRA   
+    |PAR_ABRE expresion PAR_CIERRA      
+    |LENGTH PAR_ABRE expresion PAR_CIERRA   
+	|ENTERO	                           					
+	|CADENA                            
+    |CARACTER                          
+    |DECIMAL                               					
+    |TRUE                                                           
+    |FALSE                              
+    |IDENTIFICADOR   
+
+IMPRIMIR ->  PRINTLN PAR_ABRE expresion PAR_CIERRA PUNTOYCOMA
+            |PRINT PAR_ABRE expresion PAR_CIERRA PUNTOYCOMA  
+
+statement -> LLAVE_ABRE INSTRUCCIONES LLAVE_CIERRA
+
+IF ->    IF PAR_ABRE expresion PAR_CIERRA statement                                           
+        |IF PAR_ABRE expresion PAR_CIERRA statement ELSE statement                              
+        |IF PAR_ABRE expresion PAR_CIERRA statement ELSE IF  
+
+WHILE ->     WHILE PAR_ABRE expresion PAR_CIERRA statement                  
+            |DO statement WHILE PAR_ABRE expresion PAR_CIERRA PUNTOYCOMA   
+
+FOR ->  FOR PAR_ABRE declaracion expresion PUNTOYCOMA asignaciones PAR_CIERRA statement
+
+METODO ->    IDENTIFICADOR pars DOSPUNTOS VOID statement           
+            |IDENTIFICADOR pars statement                        
+            |IDENTIFICADOR pars DOSPUNTOS TIPO statement 
+
+pars ->   PAR_ABRE parametros PAR_CIERRA 
+        | PAR_ABRE PAR_CIERRA 
+
+parametros ->     parametros COMA TIPO IDENTIFICADOR
+                | TIPO IDENTIFICADOR 
+
+LLAMADA ->   IDENTIFICADOR PAR_ABRE pp PAR_CIERRA PUNTOYCOMA                
+            |IDENTIFICADOR PAR_ABRE PAR_CIERRA PUNTOYCOMA                  
+            |RUN IDENTIFICADOR PAR_ABRE pp PAR_CIERRA PUNTOYCOMA            
+            |RUN IDENTIFICADOR PAR_ABRE PAR_CIERRA PUNTOYCOMA  
+
+pp ->     pp COMA expresion
+        | expresion                 
+
